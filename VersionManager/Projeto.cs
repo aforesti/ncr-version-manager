@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -78,9 +79,31 @@ namespace VersionManager
                 parser.WriteFile(ArquivoVersaoIni, data);
             }
         }
+
         public bool Modificado => _hash != GetHash();
 
-        private readonly Repository _repositorio;
+        public readonly Repository Repositorio;
+
+        public string[] Branches
+        {       
+            get {
+                var branches = from b in Repositorio.Branches
+                where !b.IsRemote
+                select b.FriendlyName;
+
+                return branches.ToArray();
+            }
+        }
+
+        public string Branch
+        {
+            get => Repositorio?.Head?.FriendlyName;
+            set
+            {
+                var branch = Repositorio.Branches[value];
+                Commands.Checkout(Repositorio, branch);
+            } 
+        }
 
         [DisplayName("Depende de")]
         public List<Dependencia> Dependencias { get; set; } = new List<Dependencia>();
@@ -88,12 +111,12 @@ namespace VersionManager
         public Projeto(string caminho)
         {
             _caminho = caminho;
-            _repositorio = new Repository(_caminho);
+            Repositorio = new Repository(_caminho);
 
             if (!File.Exists(ArquivoManifesto)) return;
             ManifestoJson = JObject.Parse(File.ReadAllText(ArquivoManifesto));
             var d = ManifestoJson["dependencias"];
-            foreach (var dependencia in d.Children())
+            foreach (var dependencia in d?.Children())
             {
                 var nome = dependencia.Path.Substring(dependencia.Path.LastIndexOf('.') + 1);
                 var versao = dependencia.Values<string>().First();
@@ -121,14 +144,19 @@ namespace VersionManager
 
         public void Comitar()
         {
-            var autor = new Signature("andre", "aforesti@gmail.com", DateTimeOffset.Now);
-            Commands.Stage(_repositorio, @"_build\versao.ini");
-            _repositorio.Commit($"Versão do {Nome} alterada para {Versao}", autor, autor);
+            Commands.Stage(Repositorio, ArquivoVersaoIni.Substring(_caminho.Length + 1));
+            Commands.Stage(Repositorio, ArquivoManifesto.Substring(_caminho.Length+1));
+
+            var appConfig = ConfigurationManager.AppSettings;
+            var nomeCommiter = appConfig["nomeCommiter"] ?? throw new Exception("É preciso configurar o nome do usuario antes de comitar");
+            var emailCommiter = appConfig["emailCommiter"] ?? throw new Exception("É preciso configurar o email do usuario antes de comitar");
+            var autor = new Signature(nomeCommiter, emailCommiter, DateTimeOffset.Now);
+            Repositorio.Commit($"Versão do {Nome} alterada para {Versao}", autor, autor);
         }
 
         public void Revert()
         {
-            _repositorio.Reset(ResetMode.Hard, _repositorio.Head.Tip);
+            Repositorio.Reset(ResetMode.Hard, Repositorio.Head.Tip);
         }
     }
 }

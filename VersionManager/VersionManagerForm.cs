@@ -10,6 +10,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using DevExpress.XtraGrid.Views.Grid;
 using IniParser.Model;
 
 namespace VersionManager
@@ -19,19 +20,28 @@ namespace VersionManager
         public VersionManagerForm()
         {
             InitializeComponent();
-            CarregarProjetos();
-            gridControl1.DataSource = _projetos;
+            grid.DataSource = _projetos;
         }
 
         private readonly List<Projeto> _projetos = new List<Projeto>();
         private void CarregarProjetos()
         {
-            _projetos.Clear();
-            var projetos = Directory.EnumerateDirectories(@"D:\Projetos")
-                .Where(d => File.Exists(d + @"\_build\versao.ini") || File.Exists(d + @"\_build\bin\versao.ini"));
-            foreach (var projeto in projetos)
+            gridProjetos.LoadingPanelVisible = true;
+            grid.BeginUpdate();
+            try
             {
-                _projetos.Add(new Projeto(projeto));
+                _projetos.Clear();
+                var projetos = Directory.EnumerateDirectories(@"D:\Projetos")
+                    .Where(d => File.Exists(d + @"\_build\versao.ini") || File.Exists(d + @"\_build\bin\versao.ini"));
+                foreach (var projeto in projetos)
+                {
+                    _projetos.Add(new Projeto(projeto));
+                }
+            }
+            finally
+            {
+                grid.EndUpdate();
+                gridProjetos.LoadingPanelVisible = false;
             }
         }
 
@@ -42,27 +52,17 @@ namespace VersionManager
 
         private void simpleButton2_Click(object sender, EventArgs e)
         {
-            for (var i = 0; i < gridView1.DataRowCount; i++)
-            {
-                var p = (Projeto) gridView1.GetRow(i); 
-                if (p.Modificado)
-                    p.Revert();
-            }
-            ((Projeto) gridView1.GetFocusedRow()).Revert();
+            
         }
 
         private void simpleButton3_Click(object sender, EventArgs e)
         {
-            ((Projeto)gridView1.GetFocusedRow()).Comitar();
+            
         }
 
         private void gridView1_RowStyle(object sender, DevExpress.XtraGrid.Views.Grid.RowStyleEventArgs e)
         {
-            if (e.RowHandle < 0)
-                return;
-            var p = (Projeto) gridView1.GetRow(e.RowHandle);
-            if (p.Modificado)
-                e.Appearance.BackColor = Color.Beige;
+            
         }
 
         private void gridView1_SelectionChanged(object sender, DevExpress.Data.SelectionChangedEventArgs e)
@@ -72,13 +72,53 @@ namespace VersionManager
 
         private void gridView1_FocusedRowObjectChanged(object sender, DevExpress.XtraGrid.Views.Base.FocusedRowObjectChangedEventArgs e)
         {
-            repItemLookUp.DataSource = ((Projeto)gridView1.GetFocusedRow()).Branches.ToList();
+            
         }
 
         private void simpleButton4_Click(object sender, EventArgs e)
         {
             var config = new Configuracoes();
             config.Show();
+        }
+
+        private void VersionManagerForm_Shown(object sender, EventArgs e)
+        {
+            CarregarProjetos();
+        }
+
+        private void repItemVersao_Modified(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void gridProjetos_MasterRowExpanded(object sender, DevExpress.XtraGrid.Views.Grid.CustomMasterRowEventArgs e)
+        {
+            
+        }
+
+        private void gridProjetos_MasterRowExpanding(object sender, DevExpress.XtraGrid.Views.Grid.MasterRowCanExpandEventArgs e)
+        {
+            
+        }
+
+        private void gridProjetos_MasterRowGetLevelDefaultView(object sender, DevExpress.XtraGrid.Views.Grid.MasterRowGetLevelDefaultViewEventArgs e)
+        {
+            e.DefaultView = gridBranches;
+        }
+
+        private void repItemVersao_Leave(object sender, EventArgs e)
+        {
+            var resp = MessageBox.Show(
+                "Deseja comitar a alteração?",
+                "Pergunta",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question);
+            if (resp != DialogResult.Yes)
+                return;
+
+            var detailView = gridProjetos.GetDetailView(gridProjetos.GetFocusedDataSourceRowIndex(), 0);
+            var branch = (Projeto.LocalBranch)((GridView)detailView).GetFocusedRow();
+            branch?.Comitar();
         }
     }
 }

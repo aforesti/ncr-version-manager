@@ -108,17 +108,16 @@ namespace VersionManager
 
         private void repItemVersao_Leave(object sender, EventArgs e)
         {
-            var resp = MessageBox.Show(
+            var detailView = gridProjetos.GetDetailView(gridProjetos.GetFocusedDataSourceRowIndex(), 0);
+            var branch = (Projeto.LocalBranch)((GridView)detailView).GetFocusedRow();
+
+            var comitar = branch.Modificado && (MessageBox.Show(
                 "Deseja comitar a alteração?",
                 "Pergunta",
                 MessageBoxButtons.YesNo,
-                MessageBoxIcon.Question);
-            if (resp != DialogResult.Yes)
-                return;
-
-            var detailView = gridProjetos.GetDetailView(gridProjetos.GetFocusedDataSourceRowIndex(), 0);
-            var branch = (Projeto.LocalBranch)((GridView)detailView).GetFocusedRow();
-            branch?.Comitar();
+                MessageBoxIcon.Question) == DialogResult.Yes);
+            if (comitar)
+                branch?.ComitarVersaoIni();
         }
     }
 }

@@ -53,6 +53,8 @@
     <Compile Include="Configuracoes.Designer.cs">
       <DependentUpon>Configuracoes.cs</DependentUpon>
     </Compile>
+    <Compile Include="Projeto.Dependencia.cs" />
+    <Compile Include="Projeto.LocalBranch.cs" />
     <Compile Include="VersionManagerForm.cs">
       <SubType>Form</SubType>
     </Compile>

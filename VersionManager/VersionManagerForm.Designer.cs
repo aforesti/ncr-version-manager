@@ -57,6 +57,7 @@
             this.colVersao});
             this.gridBranches.GridControl = this.grid;
             this.gridBranches.Name = "gridBranches";
+            this.gridBranches.OptionsView.ShowGroupPanel = false;
             // 
             // colBranchName
             // 
@@ -82,7 +83,6 @@
             this.repItemVersao.Mask.EditMask = "\\d+\\.\\d+\\.\\d+";
             this.repItemVersao.Mask.MaskType = DevExpress.XtraEditors.Mask.MaskType.RegEx;
             this.repItemVersao.Name = "repItemVersao";
-            this.repItemVersao.Modified += new System.EventHandler(this.repItemVersao_Modified);
             this.repItemVersao.Leave += new System.EventHandler(this.repItemVersao_Leave);
             // 
             // grid

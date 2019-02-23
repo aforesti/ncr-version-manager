@@ -36,7 +36,7 @@ namespace VersionManager
             var repositorio = new Repository(_caminho);
 
             var branches = from b in repositorio.Branches
-                where b.IsRemote
+                where !b.IsRemote
                 select b;
             
             foreach (var branch in branches)

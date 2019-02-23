@@ -30,16 +30,19 @@ namespace VersionManager
                 _caminho = repositorio.Info.WorkingDirectory;
                 _branch = branch;
 
-                AtualizarVersao();
+                var filter = new CommitFilter { IncludeReachableFrom = _branch.CanonicalName };
+                Versao = ObterVersao(filter);
+                _versaoOriginal = Versao;
+                filter.IncludeReachableFrom = _branch.TrackedBranch.CanonicalName;
+                VersaoRemota = ObterVersao(filter);
                 CarregarDependencias();
             }
-
-            private CommitFilter _filter => new CommitFilter { IncludeReachableFrom = _branch.CanonicalName };
-
+                        
             private void CarregarDependencias()
             {
                 try
                 {
+                    var _filter = new CommitFilter { IncludeReachableFrom = _branch.CanonicalName };
                     var lastCommit = _repositorio.Commits.QueryBy(ArquivoManifesto, _filter).First();
                     var blob = lastCommit.Commit[ArquivoManifesto].Target as Blob;
                     if (blob == null)
@@ -63,30 +66,25 @@ namespace VersionManager
                 }
             }
 
-            public void AtualizarVersao()
+            public string ObterVersao(CommitFilter filter)
             {
                 try
                 {
-                    var lastCommit = _repositorio.Commits.QueryBy(ArquivoVersaoIni, _filter).First();
+                    var lastCommit = _repositorio.Commits.QueryBy(ArquivoVersaoIni, filter).First();
                     var blob = lastCommit.Commit[ArquivoVersaoIni].Target as Blob;
                     if (blob == null)
-                        return;
+                        return "";
                     using (var content = new StreamReader(blob.GetContentStream(), Encoding.UTF8))
                     {
                         var parser = new FileIniDataParser();
                         var data = parser.ReadData(content);
-                        Versao = $"{data["versaoinfo"]["MajorVersion"]}.{data["versaoinfo"]["MinorVersion"]}.{data["versaoinfo"]["Release"]}";
+                        return $"{data["versaoinfo"]["MajorVersion"]}.{data["versaoinfo"]["MinorVersion"]}.{data["versaoinfo"]["Release"]}";
                     }
                 }
                 catch (Exception)
                 {
-                    Versao = "";
+                    return "";
                 }
-                finally
-                {
-                    _versaoOriginal = Versao;
-                }
-
             }
 
             public string Branch => _branch.FriendlyName.Replace("origin/", "");
@@ -94,6 +92,8 @@ namespace VersionManager
             private string _versaoOriginal;
             [DisplayName("Versão")]
             public string Versao { get; set; }
+
+            public string VersaoRemota { get; set; }
 
             [DisplayName("Depende de")]
             public List<Dependencia> Dependencias { get; set; } = new List<Dependencia>();
@@ -137,7 +137,8 @@ namespace VersionManager
 
                 Commands.Stage(_repositorio, ArquivoManifesto);
                 Signature autor = ObterCommiter();
-                _repositorio.Commit($"Atualização nas dependências do {_nome}", autor, autor);
+                
+                _repositorio.Commit($"Atualização nas dependências do {_nome}", autor, autor);                
             }
 
             private static Signature ObterCommiter()
@@ -156,11 +157,7 @@ namespace VersionManager
                     return ObterCommiter();
                 }
             }
-
-            public void Revert()
-            {
-                _repositorio.Reset(ResetMode.Hard, _branch.Tip);
-            }
+                     
         }
 
 

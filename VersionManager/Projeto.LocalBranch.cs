@@ -93,7 +93,7 @@ namespace VersionManager
             [DisplayName("Versão")]
             public string Versao { get; set; }
 
-            public string VersaoRemota { get; set; }
+            public string VersaoRemota { get; }
 
             [DisplayName("Depende de")]
             public List<Dependencia> Dependencias { get; set; } = new List<Dependencia>();

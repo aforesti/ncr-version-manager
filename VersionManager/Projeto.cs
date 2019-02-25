@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -32,7 +33,20 @@ namespace VersionManager
         
         public List<LocalBranch> Branches { get; set; } = new List<LocalBranch>();
         
-        private async void Fetch(Repository repositorio)
+        private UsernamePasswordCredentials ObterCredenciais()
+        {
+            
+            var config = ConfigurationManager.AppSettings;
+            var username = config["emailCommiter"];
+            var password = config["senha"];
+            return new UsernamePasswordCredentials
+            {
+                Username = username,
+                Password = password
+            };
+        }
+
+        public async void Fetch(Repository repositorio)
         {
             var remote = repositorio.Network.Remotes["origin"];
             var refSpecs = remote.FetchRefSpecs.Select(x => x.Specification);
@@ -40,12 +54,7 @@ namespace VersionManager
             {
                 FetchOptions options = new FetchOptions
                 {
-                    CredentialsProvider = new CredentialsHandler((url, usernameFromUrl, types) =>
-                    new UsernamePasswordCredentials()
-                    {
-                        Username = "andre.foresti@ncr.com",
-                        Password = "Jg6!82%q1Z"
-                    })
+                    CredentialsProvider = new CredentialsHandler((url, usernameFromUrl, types) => ObterCredenciais())
                 };
                 await Task.Run(() => Commands.Fetch(repositorio,remote.Name, refSpecs, options, ""));
             }
@@ -59,12 +68,12 @@ namespace VersionManager
         {
             _caminho = caminho;
             var repositorio = new Repository(_caminho);
-            var branches = from b in repositorio.Branches
-                where !b.IsRemote
-                select b;
-            
             Fetch(repositorio);
 
+            var branches = from b in repositorio.Branches
+                where !b.IsRemote
+                select b;           
+            
             foreach (var branch in branches)
             {
                 Branches.Add(new LocalBranch(Nome, repositorio, branch));

@@ -41,12 +41,12 @@
             this.repItemLookUp = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
             this.fluentDesignFormContainer1 = new DevExpress.XtraBars.FluentDesignSystem.FluentDesignFormContainer();
             this.ribbonControl1 = new DevExpress.XtraBars.Ribbon.RibbonControl();
-            this.barButtonItem1 = new DevExpress.XtraBars.BarButtonItem();
-            this.barButtonItem4 = new DevExpress.XtraBars.BarButtonItem();
+            this.BtnConfig = new DevExpress.XtraBars.BarButtonItem();
+            this.BtnRefresh = new DevExpress.XtraBars.BarButtonItem();
             this.skinDropDownButtonItem1 = new DevExpress.XtraBars.SkinDropDownButtonItem();
-            this.barButtonItem2 = new DevExpress.XtraBars.BarButtonItem();
-            this.barButtonItem3 = new DevExpress.XtraBars.BarButtonItem();
-            this.barButtonItem5 = new DevExpress.XtraBars.BarButtonItem();
+            this.BtnCommitVersao = new DevExpress.XtraBars.BarButtonItem();
+            this.BtnPush = new DevExpress.XtraBars.BarButtonItem();
+            this.BtnCommitManifesto = new DevExpress.XtraBars.BarButtonItem();
             this.ribbonPage1 = new DevExpress.XtraBars.Ribbon.RibbonPage();
             this.ribbonPageGroup2 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             this.ribbonPageGroup3 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
@@ -54,6 +54,7 @@
             this.ribbonStatusBar1 = new DevExpress.XtraBars.Ribbon.RibbonStatusBar();
             this.ribbonPage2 = new DevExpress.XtraBars.Ribbon.RibbonPage();
             this.ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
+            this.BtnAddDependency = new DevExpress.XtraBars.BarButtonItem();
             ((System.ComponentModel.ISupportInitialize)(this.gridBranches)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.repItemVersao)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.grid)).BeginInit();
@@ -101,7 +102,6 @@
             this.repItemVersao.Mask.EditMask = "\\d+\\.\\d+\\.\\d+";
             this.repItemVersao.Mask.MaskType = DevExpress.XtraEditors.Mask.MaskType.RegEx;
             this.repItemVersao.Name = "repItemVersao";
-            this.repItemVersao.Leave += new System.EventHandler(this.repItemVersao_Leave);
             // 
             // gridColumn1
             // 
@@ -128,7 +128,7 @@
             this.grid.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] {
             this.repItemVersao,
             this.repItemLookUp});
-            this.grid.Size = new System.Drawing.Size(586, 403);
+            this.grid.Size = new System.Drawing.Size(638, 403);
             this.grid.TabIndex = 1;
             this.grid.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.gridProjetos,
@@ -149,6 +149,7 @@
             this.gridProjetos.OptionsImageLoad.AnimationType = DevExpress.Utils.ImageContentAnimationType.Push;
             this.gridProjetos.OptionsView.ShowGroupPanel = false;
             this.gridProjetos.MasterRowGetLevelDefaultView += new DevExpress.XtraGrid.Views.Grid.MasterRowGetLevelDefaultViewEventHandler(this.gridProjetos_MasterRowGetLevelDefaultView);
+            this.gridProjetos.FocusedRowChanged += new DevExpress.XtraGrid.Views.Base.FocusedRowChangedEventHandler(this.gridProjetos_FocusedRowChanged);
             // 
             // colNome
             // 
@@ -177,7 +178,7 @@
             this.fluentDesignFormContainer1.Location = new System.Drawing.Point(0, 143);
             this.fluentDesignFormContainer1.Margin = new System.Windows.Forms.Padding(4);
             this.fluentDesignFormContainer1.Name = "fluentDesignFormContainer1";
-            this.fluentDesignFormContainer1.Size = new System.Drawing.Size(586, 403);
+            this.fluentDesignFormContainer1.Size = new System.Drawing.Size(638, 403);
             this.fluentDesignFormContainer1.TabIndex = 2;
             // 
             // ribbonControl1
@@ -185,68 +186,70 @@
             this.ribbonControl1.ExpandCollapseItem.Id = 0;
             this.ribbonControl1.Items.AddRange(new DevExpress.XtraBars.BarItem[] {
             this.ribbonControl1.ExpandCollapseItem,
-            this.barButtonItem1,
-            this.barButtonItem4,
+            this.BtnConfig,
+            this.BtnRefresh,
             this.skinDropDownButtonItem1,
-            this.barButtonItem2,
-            this.barButtonItem3,
-            this.barButtonItem5});
+            this.BtnCommitVersao,
+            this.BtnPush,
+            this.BtnCommitManifesto,
+            this.BtnAddDependency});
             this.ribbonControl1.Location = new System.Drawing.Point(0, 0);
             this.ribbonControl1.Margin = new System.Windows.Forms.Padding(4);
-            this.ribbonControl1.MaxItemId = 5;
+            this.ribbonControl1.MaxItemId = 6;
             this.ribbonControl1.Name = "ribbonControl1";
             this.ribbonControl1.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] {
             this.ribbonPage1});
             this.ribbonControl1.QuickToolbarItemLinks.Add(this.skinDropDownButtonItem1);
-            this.ribbonControl1.Size = new System.Drawing.Size(586, 143);
+            this.ribbonControl1.Size = new System.Drawing.Size(638, 143);
             this.ribbonControl1.StatusBar = this.ribbonStatusBar1;
             // 
-            // barButtonItem1
+            // BtnConfig
             // 
-            this.barButtonItem1.Caption = "Configurar";
-            this.barButtonItem1.Id = 1;
-            this.barButtonItem1.ImageOptions.SvgImage = ((DevExpress.Utils.Svg.SvgImage)(resources.GetObject("barButtonItem1.ImageOptions.SvgImage")));
-            this.barButtonItem1.Name = "barButtonItem1";
-            this.barButtonItem1.RibbonStyle = DevExpress.XtraBars.Ribbon.RibbonItemStyles.Large;
-            this.barButtonItem1.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.barButtonItem1_ItemClick);
+            this.BtnConfig.Caption = "Configurar";
+            this.BtnConfig.Id = 1;
+            this.BtnConfig.ImageOptions.SvgImage = ((DevExpress.Utils.Svg.SvgImage)(resources.GetObject("barButtonItem1.ImageOptions.SvgImage")));
+            this.BtnConfig.Name = "BtnConfig";
+            this.BtnConfig.RibbonStyle = DevExpress.XtraBars.Ribbon.RibbonItemStyles.Large;
+            this.BtnConfig.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.barButtonItem1_ItemClick);
             // 
-            // barButtonItem4
+            // BtnRefresh
             // 
-            this.barButtonItem4.Caption = "Atualizar";
-            this.barButtonItem4.Id = 4;
-            this.barButtonItem4.ImageOptions.SvgImage = ((DevExpress.Utils.Svg.SvgImage)(resources.GetObject("barButtonItem4.ImageOptions.SvgImage")));
-            this.barButtonItem4.Name = "barButtonItem4";
-            this.barButtonItem4.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.barButtonItem2_ItemClick);
+            this.BtnRefresh.Caption = "Atualizar";
+            this.BtnRefresh.Id = 4;
+            this.BtnRefresh.ImageOptions.SvgImage = ((DevExpress.Utils.Svg.SvgImage)(resources.GetObject("barButtonItem4.ImageOptions.SvgImage")));
+            this.BtnRefresh.Name = "BtnRefresh";
+            this.BtnRefresh.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.barButtonItem2_ItemClick);
             // 
             // skinDropDownButtonItem1
             // 
             this.skinDropDownButtonItem1.Id = 1;
             this.skinDropDownButtonItem1.Name = "skinDropDownButtonItem1";
             // 
-            // barButtonItem2
+            // BtnCommitVersao
             // 
-            this.barButtonItem2.Caption = "Comitar";
-            this.barButtonItem2.Hint = "Comita as alterações no branch selecionado";
-            this.barButtonItem2.Id = 2;
-            this.barButtonItem2.ImageOptions.SvgImage = ((DevExpress.Utils.Svg.SvgImage)(resources.GetObject("barButtonItem2.ImageOptions.SvgImage")));
-            this.barButtonItem2.Name = "barButtonItem2";
-            this.barButtonItem2.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.barButtonItem2_ItemClick_1);
+            this.BtnCommitVersao.Caption = "Comitar versao.ini ";
+            this.BtnCommitVersao.Hint = "Comita as alterações no branch selecionado";
+            this.BtnCommitVersao.Id = 2;
+            this.BtnCommitVersao.ImageOptions.SvgImage = ((DevExpress.Utils.Svg.SvgImage)(resources.GetObject("barButtonItem2.ImageOptions.SvgImage")));
+            this.BtnCommitVersao.Name = "BtnCommitVersao";
+            this.BtnCommitVersao.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.barButtonItem2_ItemClick_1);
             // 
-            // barButtonItem3
+            // BtnPush
             // 
-            this.barButtonItem3.Caption = "Push";
-            this.barButtonItem3.Hint = "Envia os commits pendentes para o servidor remoto";
-            this.barButtonItem3.Id = 3;
-            this.barButtonItem3.ImageOptions.SvgImage = ((DevExpress.Utils.Svg.SvgImage)(resources.GetObject("barButtonItem3.ImageOptions.SvgImage")));
-            this.barButtonItem3.Name = "barButtonItem3";
+            this.BtnPush.Caption = "Push";
+            this.BtnPush.Hint = "Envia os commits pendentes para o servidor remoto";
+            this.BtnPush.Id = 3;
+            this.BtnPush.ImageOptions.SvgImage = ((DevExpress.Utils.Svg.SvgImage)(resources.GetObject("barButtonItem3.ImageOptions.SvgImage")));
+            this.BtnPush.Name = "BtnPush";
+            this.BtnPush.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.BtnPush_ItemClick);
             // 
-            // barButtonItem5
+            // BtnCommitManifesto
             // 
-            this.barButtonItem5.Caption = "Comitar manifesto";
-            this.barButtonItem5.Id = 4;
-            this.barButtonItem5.ImageOptions.SvgImage = ((DevExpress.Utils.Svg.SvgImage)(resources.GetObject("barButtonItem5.ImageOptions.SvgImage")));
-            this.barButtonItem5.Name = "barButtonItem5";
-            this.barButtonItem5.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.barButtonItem5_ItemClick);
+            this.BtnCommitManifesto.Caption = "Comitar manifesto.server";
+            this.BtnCommitManifesto.Id = 4;
+            this.BtnCommitManifesto.ImageOptions.SvgImage = ((DevExpress.Utils.Svg.SvgImage)(resources.GetObject("barButtonItem5.ImageOptions.SvgImage")));
+            this.BtnCommitManifesto.Name = "BtnCommitManifesto";
+            this.BtnCommitManifesto.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.barButtonItem5_ItemClick);
             // 
             // ribbonPage1
             // 
@@ -259,21 +262,23 @@
             // ribbonPageGroup2
             // 
             this.ribbonPageGroup2.AllowTextClipping = false;
-            this.ribbonPageGroup2.ItemLinks.Add(this.barButtonItem1);
-            this.ribbonPageGroup2.ItemLinks.Add(this.barButtonItem4);
+            this.ribbonPageGroup2.ItemLinks.Add(this.BtnConfig);
+            this.ribbonPageGroup2.ItemLinks.Add(this.BtnRefresh);
+            this.ribbonPageGroup2.ItemLinks.Add(this.BtnPush);
             this.ribbonPageGroup2.Name = "ribbonPageGroup2";
             this.ribbonPageGroup2.ShowCaptionButton = false;
+            this.ribbonPageGroup2.Text = "Repositórios";
             // 
             // ribbonPageGroup3
             // 
-            this.ribbonPageGroup3.ItemLinks.Add(this.barButtonItem2);
-            this.ribbonPageGroup3.ItemLinks.Add(this.barButtonItem3);
+            this.ribbonPageGroup3.ItemLinks.Add(this.BtnCommitVersao);
             this.ribbonPageGroup3.Name = "ribbonPageGroup3";
             this.ribbonPageGroup3.Text = "Versão";
             // 
             // ribbonPageGroup4
             // 
-            this.ribbonPageGroup4.ItemLinks.Add(this.barButtonItem5);
+            this.ribbonPageGroup4.ItemLinks.Add(this.BtnAddDependency);
+            this.ribbonPageGroup4.ItemLinks.Add(this.BtnCommitManifesto);
             this.ribbonPageGroup4.Name = "ribbonPageGroup4";
             this.ribbonPageGroup4.Text = "Manifesto";
             // 
@@ -283,7 +288,7 @@
             this.ribbonStatusBar1.Margin = new System.Windows.Forms.Padding(4);
             this.ribbonStatusBar1.Name = "ribbonStatusBar1";
             this.ribbonStatusBar1.Ribbon = this.ribbonControl1;
-            this.ribbonStatusBar1.Size = new System.Drawing.Size(586, 31);
+            this.ribbonStatusBar1.Size = new System.Drawing.Size(638, 31);
             // 
             // ribbonPage2
             // 
@@ -292,16 +297,23 @@
             // 
             // ribbonPageGroup1
             // 
-            this.ribbonPageGroup1.ItemLinks.Add(this.barButtonItem1);
+            this.ribbonPageGroup1.ItemLinks.Add(this.BtnConfig);
             this.ribbonPageGroup1.Name = "ribbonPageGroup1";
             this.ribbonPageGroup1.Text = "ribbonPageGroup1";
+            // 
+            // BtnAddDependency
+            // 
+            this.BtnAddDependency.Caption = "Adicionar dependência";
+            this.BtnAddDependency.Id = 5;
+            this.BtnAddDependency.ImageOptions.SvgImage = ((DevExpress.Utils.Svg.SvgImage)(resources.GetObject("barButtonItem1.ImageOptions.SvgImage1")));
+            this.BtnAddDependency.Name = "BtnAddDependency";
             // 
             // VersionManagerForm
             // 
             this.Appearance.Options.UseFont = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 19F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(586, 577);
+            this.ClientSize = new System.Drawing.Size(638, 577);
             this.Controls.Add(this.grid);
             this.Controls.Add(this.fluentDesignFormContainer1);
             this.Controls.Add(this.ribbonStatusBar1);
@@ -339,16 +351,17 @@
         private DevExpress.XtraBars.Ribbon.RibbonPageGroup ribbonPageGroup2;
         private DevExpress.XtraBars.Ribbon.RibbonStatusBar ribbonStatusBar1;
         private DevExpress.XtraBars.Ribbon.RibbonPage ribbonPage2;
-        private DevExpress.XtraBars.BarButtonItem barButtonItem1;
+        private DevExpress.XtraBars.BarButtonItem BtnConfig;
         private DevExpress.XtraBars.Ribbon.RibbonPageGroup ribbonPageGroup1;
-        private DevExpress.XtraBars.BarButtonItem barButtonItem4;
+        private DevExpress.XtraBars.BarButtonItem BtnRefresh;
         private DevExpress.XtraBars.SkinDropDownButtonItem skinDropDownButtonItem1;
-        private DevExpress.XtraBars.BarButtonItem barButtonItem2;
-        private DevExpress.XtraBars.BarButtonItem barButtonItem3;
+        private DevExpress.XtraBars.BarButtonItem BtnCommitVersao;
+        private DevExpress.XtraBars.BarButtonItem BtnPush;
         private DevExpress.XtraBars.Ribbon.RibbonPageGroup ribbonPageGroup3;
-        private DevExpress.XtraBars.BarButtonItem barButtonItem5;
+        private DevExpress.XtraBars.BarButtonItem BtnCommitManifesto;
         private DevExpress.XtraBars.Ribbon.RibbonPageGroup ribbonPageGroup4;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn1;
+        private DevExpress.XtraBars.BarButtonItem BtnAddDependency;
     }
 }
 

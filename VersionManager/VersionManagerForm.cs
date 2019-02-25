@@ -40,11 +40,6 @@ namespace VersionManager
             }
         }
 
-        private async void simpleButton1_Click(object sender, EventArgs e)
-        {
-            await CarregarProjetos();
-        }
-                
         private async void VersionManagerForm_Shown(object sender, EventArgs e)
         {
             await CarregarProjetos();
@@ -53,20 +48,6 @@ namespace VersionManager
         private void gridProjetos_MasterRowGetLevelDefaultView(object sender, DevExpress.XtraGrid.Views.Grid.MasterRowGetLevelDefaultViewEventArgs e)
         {
             e.DefaultView = gridBranches;
-        }
-
-        private void repItemVersao_Leave(object sender, EventArgs e)
-        {
-            var detailView = gridProjetos.GetDetailView(gridProjetos.GetFocusedDataSourceRowIndex(), 0);
-            var branch = (Projeto.LocalBranch)((GridView)detailView)?.GetFocusedRow();
-
-            var comitar = branch.Modificado && (MessageBox.Show(
-                "Deseja comitar a alteração?",
-                "Pergunta",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Question) == DialogResult.Yes);
-            if (comitar)
-                branch?.ComitarVersaoIni();
         }
 
         private void barButtonItem1_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
@@ -97,7 +78,7 @@ namespace VersionManager
             }                
 
             if (MessageBox.Show(
-                "Deseja comitar a alteração?",
+                $"Confirma o commit no branch {branch.Branch} ?",
                 "Pergunta",
                 MessageBoxButtons.YesNo,
                 MessageBoxIcon.Question) == DialogResult.Yes)
@@ -113,6 +94,16 @@ namespace VersionManager
             if (branch == null) return;
 
             branch.ComitarManifesto();
+        }
+
+        private void BtnPush_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
+        {
+
+        }
+
+        private void gridProjetos_FocusedRowChanged(object sender, DevExpress.XtraGrid.Views.Base.FocusedRowChangedEventArgs e)
+        {
+            
         }
     }
 }

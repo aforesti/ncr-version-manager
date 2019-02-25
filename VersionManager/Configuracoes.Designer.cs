@@ -39,6 +39,8 @@
             this.layoutControlItem3 = new DevExpress.XtraLayout.LayoutControlItem();
             this.layoutControlItem2 = new DevExpress.XtraLayout.LayoutControlItem();
             this.layoutControlItem4 = new DevExpress.XtraLayout.LayoutControlItem();
+            this.TxtSenha = new DevExpress.XtraEditors.TextEdit();
+            this.layoutControlItem5 = new DevExpress.XtraLayout.LayoutControlItem();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControl1)).BeginInit();
             this.layoutControl1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.TxtEmailCommiter.Properties)).BeginInit();
@@ -49,10 +51,13 @@
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem4)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.TxtSenha.Properties)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem5)).BeginInit();
             this.SuspendLayout();
             // 
             // layoutControl1
             // 
+            this.layoutControl1.Controls.Add(this.TxtSenha);
             this.layoutControl1.Controls.Add(this.simpleButton2);
             this.layoutControl1.Controls.Add(this.simpleButton1);
             this.layoutControl1.Controls.Add(this.TxtEmailCommiter);
@@ -87,19 +92,19 @@
             // 
             // TxtEmailCommiter
             // 
-            this.TxtEmailCommiter.Location = new System.Drawing.Point(42, 36);
+            this.TxtEmailCommiter.Location = new System.Drawing.Point(45, 36);
             this.TxtEmailCommiter.Name = "TxtEmailCommiter";
             this.TxtEmailCommiter.Properties.Mask.IgnoreMaskBlank = false;
             this.TxtEmailCommiter.Properties.Mask.ShowPlaceHolders = false;
-            this.TxtEmailCommiter.Size = new System.Drawing.Size(277, 20);
+            this.TxtEmailCommiter.Size = new System.Drawing.Size(274, 20);
             this.TxtEmailCommiter.StyleController = this.layoutControl1;
             this.TxtEmailCommiter.TabIndex = 5;
             // 
             // TxtNomeCommiter
             // 
-            this.TxtNomeCommiter.Location = new System.Drawing.Point(42, 12);
+            this.TxtNomeCommiter.Location = new System.Drawing.Point(45, 12);
             this.TxtNomeCommiter.Name = "TxtNomeCommiter";
-            this.TxtNomeCommiter.Size = new System.Drawing.Size(277, 20);
+            this.TxtNomeCommiter.Size = new System.Drawing.Size(274, 20);
             this.TxtNomeCommiter.StyleController = this.layoutControl1;
             this.TxtNomeCommiter.TabIndex = 4;
             // 
@@ -112,7 +117,8 @@
             this.emptySpaceItem1,
             this.layoutControlItem3,
             this.layoutControlItem2,
-            this.layoutControlItem4});
+            this.layoutControlItem4,
+            this.layoutControlItem5});
             this.layoutControlGroup1.Name = "layoutControlGroup1";
             this.layoutControlGroup1.Size = new System.Drawing.Size(331, 136);
             this.layoutControlGroup1.TextVisible = false;
@@ -124,14 +130,14 @@
             this.layoutControlItem1.Name = "layoutControlItem1";
             this.layoutControlItem1.Size = new System.Drawing.Size(311, 24);
             this.layoutControlItem1.Text = "Nome";
-            this.layoutControlItem1.TextSize = new System.Drawing.Size(27, 13);
+            this.layoutControlItem1.TextSize = new System.Drawing.Size(30, 13);
             // 
             // emptySpaceItem1
             // 
             this.emptySpaceItem1.AllowHotTrack = false;
-            this.emptySpaceItem1.Location = new System.Drawing.Point(0, 48);
+            this.emptySpaceItem1.Location = new System.Drawing.Point(0, 72);
             this.emptySpaceItem1.Name = "emptySpaceItem1";
-            this.emptySpaceItem1.Size = new System.Drawing.Size(311, 42);
+            this.emptySpaceItem1.Size = new System.Drawing.Size(311, 18);
             this.emptySpaceItem1.TextSize = new System.Drawing.Size(0, 0);
             // 
             // layoutControlItem3
@@ -151,7 +157,7 @@
             this.layoutControlItem2.Name = "layoutControlItem2";
             this.layoutControlItem2.Size = new System.Drawing.Size(311, 24);
             this.layoutControlItem2.Text = "Email";
-            this.layoutControlItem2.TextSize = new System.Drawing.Size(27, 13);
+            this.layoutControlItem2.TextSize = new System.Drawing.Size(30, 13);
             // 
             // layoutControlItem4
             // 
@@ -161,6 +167,26 @@
             this.layoutControlItem4.Size = new System.Drawing.Size(156, 26);
             this.layoutControlItem4.TextSize = new System.Drawing.Size(0, 0);
             this.layoutControlItem4.TextVisible = false;
+            // 
+            // TxtSenha
+            // 
+            this.TxtSenha.Location = new System.Drawing.Point(45, 60);
+            this.TxtSenha.Name = "TxtSenha";
+            this.TxtSenha.Properties.Mask.IgnoreMaskBlank = false;
+            this.TxtSenha.Properties.Mask.ShowPlaceHolders = false;
+            this.TxtSenha.Properties.UseSystemPasswordChar = true;
+            this.TxtSenha.Size = new System.Drawing.Size(274, 20);
+            this.TxtSenha.StyleController = this.layoutControl1;
+            this.TxtSenha.TabIndex = 8;
+            // 
+            // layoutControlItem5
+            // 
+            this.layoutControlItem5.Control = this.TxtSenha;
+            this.layoutControlItem5.Location = new System.Drawing.Point(0, 48);
+            this.layoutControlItem5.Name = "layoutControlItem5";
+            this.layoutControlItem5.Size = new System.Drawing.Size(311, 24);
+            this.layoutControlItem5.Text = "Senha";
+            this.layoutControlItem5.TextSize = new System.Drawing.Size(30, 13);
             // 
             // Configuracoes
             // 
@@ -180,6 +206,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem3)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem4)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.TxtSenha.Properties)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem5)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -197,5 +225,7 @@
         private DevExpress.XtraLayout.LayoutControlItem layoutControlItem3;
         private DevExpress.XtraLayout.LayoutControlItem layoutControlItem2;
         private DevExpress.XtraLayout.LayoutControlItem layoutControlItem4;
+        private DevExpress.XtraEditors.TextEdit TxtSenha;
+        private DevExpress.XtraLayout.LayoutControlItem layoutControlItem5;
     }
 }

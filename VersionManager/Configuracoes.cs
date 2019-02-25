@@ -24,6 +24,7 @@ namespace VersionManager
             var config = ConfigurationManager.AppSettings;
             TxtNomeCommiter.Text = config["nomeCommiter"];
             TxtEmailCommiter.Text = config["emailCommiter"];
+            TxtSenha.Text = config["senha"];
         }
 
         private void simpleButton1_Click(object sender, EventArgs e)
@@ -35,6 +36,7 @@ namespace VersionManager
         {
             SalvarConfiguracao("nomeCommiter", TxtNomeCommiter.Text);
             SalvarConfiguracao("emailCommiter", TxtEmailCommiter.Text);
+            SalvarConfiguracao("senha", TxtSenha.Text);
             Close();
         }
 

@@ -20,31 +20,47 @@ namespace VersionManager
             private readonly Branch _branch;
             private readonly string _caminho;
             private readonly string _nome;
-            private const string ArquivoVersaoIni = "_build/versao.ini";
-            private const string ArquivoManifesto = "_build/pacote/manifesto.server";
+            private readonly string _arquivoVersao;
+            private readonly string _arquivoManifesto;
 
-            public LocalBranch(string nome, Repository repositorio, Branch branch)
+            private string _versaoOriginal;
+            private Dependencia[] _dependenciasOriginais;
+            public string Branch => _branch.FriendlyName.Replace("origin/", "");
+
+            [DisplayName("Versão")]
+            public string Versao { get; set; }
+            public string VersaoRemota { get; }
+            [DisplayName("Depende de")]
+            public List<Dependencia> Dependencias { get; set; } = new List<Dependencia>();
+            public bool Modificado => (Versao != _versaoOriginal) || (_dependenciasOriginais != Dependencias.ToArray());
+            public LocalBranch(string nome, Repository repositorio, Branch branch, string arquivoVersao, string arquivoManifesto)
             {
                 _nome = nome;
                 _repositorio = repositorio;
                 _caminho = repositorio.Info.WorkingDirectory;
                 _branch = branch;
+                _arquivoVersao = arquivoVersao;
+                _arquivoManifesto = arquivoManifesto;
 
                 var filter = new CommitFilter { IncludeReachableFrom = _branch.CanonicalName };
                 Versao = ObterVersao(filter);
                 _versaoOriginal = Versao;
-                filter.IncludeReachableFrom = _branch.TrackedBranch.CanonicalName;
-                VersaoRemota = ObterVersao(filter);
+                if (_branch.TrackedBranch != null)
+                {
+                    filter.IncludeReachableFrom = _branch.TrackedBranch.CanonicalName;
+                    VersaoRemota = ObterVersao(filter);
+                }
                 CarregarDependencias();
+                _dependenciasOriginais = Dependencias.ToArray();
             }
                         
             private void CarregarDependencias()
             {
                 try
                 {
-                    var _filter = new CommitFilter { IncludeReachableFrom = _branch.CanonicalName };
-                    var lastCommit = _repositorio.Commits.QueryBy(ArquivoManifesto, _filter).First();
-                    var blob = lastCommit.Commit[ArquivoManifesto].Target as Blob;
+                    var filter = new CommitFilter { IncludeReachableFrom = _branch.CanonicalName };
+                    var lastCommit = _repositorio.Commits.QueryBy(_arquivoManifesto, filter).First();
+                    var blob = lastCommit.Commit[_arquivoManifesto].Target as Blob;
                     if (blob == null)
                         return;
                     using (var content = new StreamReader(blob.GetContentStream(), Encoding.UTF8))
@@ -70,8 +86,8 @@ namespace VersionManager
             {
                 try
                 {
-                    var lastCommit = _repositorio.Commits.QueryBy(ArquivoVersaoIni, filter).First();
-                    var blob = lastCommit.Commit[ArquivoVersaoIni].Target as Blob;
+                    var lastCommit = _repositorio.Commits.QueryBy(_arquivoVersao, filter).First();
+                    var blob = lastCommit.Commit[_arquivoVersao].Target as Blob;
                     if (blob == null)
                         return "";
                     using (var content = new StreamReader(blob.GetContentStream(), Encoding.UTF8))
@@ -87,58 +103,55 @@ namespace VersionManager
                 }
             }
 
-            public string Branch => _branch.FriendlyName.Replace("origin/", "");
-
-            private string _versaoOriginal;
-            [DisplayName("Versão")]
-            public string Versao { get; set; }
-
-            public string VersaoRemota { get; }
-
-            [DisplayName("Depende de")]
-            public List<Dependencia> Dependencias { get; set; } = new List<Dependencia>();
-            public bool Modificado => Versao != _versaoOriginal;
-
             public void AtualizarArquivoVersaoIni(string value)
             {
                 var parser = new FileIniDataParser();
-                var data = parser.ReadFile(_caminho + ArquivoVersaoIni);
+                var data = parser.ReadFile(_caminho + _arquivoVersao);
                 var versao = new Version(value);
                 data["versaoinfo"]["MajorVersion"] = versao.Major.ToString();
                 data["versaoinfo"]["MinorVersion"] = versao.Minor.ToString();
                 data["versaoinfo"]["Release"] = versao.Build.ToString();
-                parser.WriteFile(_caminho + ArquivoVersaoIni, data);
+                parser.WriteFile(_caminho + _arquivoVersao, data);
 
             }
             private void AtualizarArquivoManifesto()
             {
-                var manifesto = JObject.Parse(File.ReadAllText(_caminho + ArquivoManifesto));
+                var manifesto = JObject.Parse(File.ReadAllText(_caminho + _arquivoManifesto));
                 foreach (var d in Dependencias)
                     manifesto["dependencias"][d.Nome] = d.Versao;
 
-                File.WriteAllText(_caminho + ArquivoManifesto, manifesto.ToString());
+                File.WriteAllText(_caminho + _arquivoManifesto, manifesto.ToString());
             }
 
-            public void ComitarVersaoIni()
+            private void ComitarVersaoIni()
             {
                 Commands.Checkout(_repositorio, _branch);
                 AtualizarArquivoVersaoIni(Versao);
                 
-                Commands.Stage(_repositorio, ArquivoVersaoIni);
+                Commands.Stage(_repositorio, _arquivoVersao);
                 Signature autor = ObterCommiter();
                 _repositorio.Commit($"Versão do {_nome} alterada para {Versao}", autor, autor);
                 _versaoOriginal = Versao;
             }
 
-            public void ComitarManifesto()
+            private void ComitarManifesto()
             {
                 Commands.Checkout(_repositorio, _branch);
                 AtualizarArquivoManifesto();
 
-                Commands.Stage(_repositorio, ArquivoManifesto);
+                Commands.Stage(_repositorio, _arquivoManifesto);
                 Signature autor = ObterCommiter();
                 
-                _repositorio.Commit($"Atualização nas dependências do {_nome}", autor, autor);                
+                _repositorio.Commit($"Atualização nas dependências do {_nome}", autor, autor);
+                _dependenciasOriginais = Dependencias.ToArray();
+            }
+
+            public void Comitar()
+            {
+                if (_versaoOriginal != Versao)
+                    ComitarVersaoIni();
+                if (_dependenciasOriginais != Dependencias.ToArray())
+                    ComitarManifesto();
             }
 
             private static Signature ObterCommiter()
@@ -157,7 +170,6 @@ namespace VersionManager
                     return ObterCommiter();
                 }
             }
-                     
         }
 
 

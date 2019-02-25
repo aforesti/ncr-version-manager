@@ -15,36 +15,24 @@ namespace VersionManager
     {
         private readonly string _caminho;
 
+        private readonly string _arquivoVersaoIni;
+
+        private readonly string _arquivoManifesto;
+
         public string Nome
         {
             get
             {
-                var arquivoManifesto = File.Exists(_caminho + @"\_build\pacote\manifesto.server") 
-                    ? _caminho + @"\_build\pacote\manifesto.server" 
-                    : _caminho + @"\_build\bin\pacote\manifesto.server";
-                
-                if (!File.Exists(arquivoManifesto))
+                if (_arquivoManifesto == null || 
+                   !File.Exists(_caminho +"\\"+ _arquivoManifesto.Replace("/","\\")))
                     return _caminho.Substring(_caminho.LastIndexOf('\\') + 1);
 
-                var manifesto = JObject.Parse(File.ReadAllText(arquivoManifesto));
+                var manifesto = JObject.Parse(File.ReadAllText(Path.Combine(_caminho, _arquivoManifesto)));
                 return manifesto["nome"].ToString(); 
             }
         }
         
         public List<LocalBranch> Branches { get; set; } = new List<LocalBranch>();
-        
-        private UsernamePasswordCredentials ObterCredenciais()
-        {
-            
-            var config = ConfigurationManager.AppSettings;
-            var username = config["emailCommiter"];
-            var password = config["senha"];
-            return new UsernamePasswordCredentials
-            {
-                Username = username,
-                Password = password
-            };
-        }
 
         public async void Fetch(Repository repositorio)
         {
@@ -54,7 +42,7 @@ namespace VersionManager
             {
                 FetchOptions options = new FetchOptions
                 {
-                    CredentialsProvider = new CredentialsHandler((url, usernameFromUrl, types) => ObterCredenciais())
+                    CredentialsProvider = Configuracoes.ObterCredenciais()
                 };
                 await Task.Run(() => Commands.Fetch(repositorio,remote.Name, refSpecs, options, ""));
             }
@@ -64,11 +52,36 @@ namespace VersionManager
             }
         }
 
-        public Projeto(string caminho)
+        public async Task Push()
+        {
+            using (var repo = new Repository(_caminho))
+            {
+                var options = new PushOptions
+                {
+                    CredentialsProvider = Configuracoes.ObterCredenciais()
+                };
+
+                var branches = from b in repo.Branches
+                    where !b.IsRemote
+                    select b;
+
+                await Task.Run(() =>
+                {
+                    foreach (var branch in branches)
+                    {
+                        repo.Network.Push(branch, options);
+                    }
+                });
+            }
+        }
+
+        public Projeto(string caminho, string arquivoVersaoIni, string arquivoManifesto)
         {
             _caminho = caminho;
+            _arquivoVersaoIni = arquivoVersaoIni;
+            _arquivoManifesto = arquivoManifesto;
             var repositorio = new Repository(_caminho);
-            Fetch(repositorio);
+            //Fetch(repositorio);
 
             var branches = from b in repositorio.Branches
                 where !b.IsRemote
@@ -76,7 +89,7 @@ namespace VersionManager
             
             foreach (var branch in branches)
             {
-                Branches.Add(new LocalBranch(Nome, repositorio, branch));
+                Branches.Add(new LocalBranch(Nome, repositorio, branch, arquivoVersaoIni, arquivoManifesto));
             }
         }
         

@@ -1,0 +1,3 @@
+[submodule "ncr-library"]
+	path = ncr-library
+	url = https://bitbucket.org/colibriagile/ncr-library.git

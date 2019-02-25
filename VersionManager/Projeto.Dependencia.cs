@@ -6,7 +6,7 @@ namespace VersionManager
     {
         public class Dependencia
         {
-            public string Nome { get; }
+            public string Nome { get; set; }
             [DisplayName("Versão")]
             public string Versao { get; set; }
 

@@ -62,7 +62,7 @@ namespace VersionManager
             }  
             catch (ConfigurationErrorsException)  
             {  
-                MessageBox.Show("Erro ao gravar as configurações no arquivo.s");  
+                MessageBox.Show("Erro ao gravar as configurações no arquivo.");  
             }  
         }
 

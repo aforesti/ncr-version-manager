@@ -71,21 +71,18 @@ namespace VersionManager
         {
             var projeto = ((Projeto) gridProjetos.GetFocusedRow());
             if (projeto == null) return;
-            using (var aguarde = new DlgAguarde(this, "Push", "Subindo commits para o servidor remoto."))
+            using (new DlgAguarde(this, "Push", "Subindo commits para o servidor remoto."))
             {
                 try
                 {
                     await projeto.Push();
                 }
-                catch
+                catch (Exception ex)
                 {
-                    MessageBox.Show(
+                    DlgErro.Erro(this, ex, 
                         "Falha ao tentar fazer o push dos commits.\n" +
                         "Verifique se o usuário e senha estão configurados corretamente.\n" +
-                        "Atualmente conexões ssh não são suportadas.",
-                        "Falha",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Error
+                        "Atualmente conexões ssh não são suportadas."
                     );
                 }
             }
@@ -94,18 +91,50 @@ namespace VersionManager
 
         private GridView DetailView => (GridView) gridProjetos.GetDetailView(gridProjetos.GetFocusedDataSourceRowIndex(), 0);
 
-        private void repItemButtonOk_ButtonClick(object sender, DevExpress.XtraEditors.Controls.ButtonPressedEventArgs e)
+        private async void repItemButtonOk_ButtonClick(object sender, DevExpress.XtraEditors.Controls.ButtonPressedEventArgs e)
         {
-            if (e.Button.Index == 0)
-                AdicionarDependencia(); 
-            else
-                Commit();
+            switch (e.Button.Index)
+            {
+                case 0:
+                    await Pull();
+                    break;
+                case 1:
+                    AdicionarDependencia();
+                    break;
+                default:
+                    Commit();
+                    break;
+            }
+        }
+
+        private async Task Pull()
+        {
+            var detailView = gridProjetos.GetDetailView(gridProjetos.GetFocusedDataSourceRowIndex(), 0);
+            var branch = (Projeto.LocalBranch)DetailView.GetFocusedRow();
+            if (branch == null) return;
+            using (new DlgAguarde(this, "Aguarde", "Fazendo pull do branch seelcionado."))
+            {
+                try
+                {
+                    await Task.Run(() => branch.Pull());
+                }
+                catch (Exception ex)
+                {
+                    DlgErro.Erro(this, ex,
+                        "Falha ao tentar fazer o pull.\n" +
+                        "Verifique se o usuário e senha estão configurados corretamente.\n" +
+                        "Atualmente conexões ssh não são suportadas."
+                    );
+                }
+            }
+
         }
 
         private void AdicionarDependencia()
         {
             var detailView = gridProjetos.GetDetailView(gridProjetos.GetFocusedDataSourceRowIndex(), 0);
             var branch = (Projeto.LocalBranch)DetailView.GetFocusedRow();
+            if (branch == null) return;
             var nome = "";
             if (!Input.PedirNome(this, "Nova dependência", "Projeto", ref nome))
                 return;

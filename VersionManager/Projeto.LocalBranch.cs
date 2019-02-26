@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -42,12 +43,11 @@ namespace VersionManager
                 _arquivoVersao = arquivoVersao;
                 _arquivoManifesto = arquivoManifesto;
 
-                var filter = new CommitFilter { IncludeReachableFrom = _branch.CanonicalName };
-                Versao = ObterVersao(filter);
+                Versao = ObterVersao();
                 _versaoOriginal = Versao;
                 if (_branch.TrackedBranch != null)
                 {
-                    filter.IncludeReachableFrom = _branch.TrackedBranch.CanonicalName;
+                    var filter = new CommitFilter { IncludeReachableFrom = _branch.TrackedBranch.CanonicalName };
                     VersaoRemota = ObterVersao(filter);
                 }
                 CarregarDependencias();
@@ -82,8 +82,10 @@ namespace VersionManager
                 }
             }
 
-            public string ObterVersao(CommitFilter filter)
+            public string ObterVersao(CommitFilter filter = null)
             {
+                if (filter == null)
+                    filter = new CommitFilter { IncludeReachableFrom = _branch.CanonicalName };
                 try
                 {
                     var lastCommit = _repositorio.Commits.QueryBy(_arquivoVersao, filter).First();
@@ -169,6 +171,21 @@ namespace VersionManager
                     config.ShowDialog();
                     return ObterCommiter();
                 }
+            }
+
+            public void Pull()
+            {
+                var options = new LibGit2Sharp.PullOptions
+                {
+                    FetchOptions = new FetchOptions()
+                    {
+                        CredentialsProvider = Configuracoes.ObterCredenciais()
+                    }
+                };
+                
+                Commands.Pull(_repositorio, ObterCommiter(), options);
+                Versao = ObterVersao();
+                _versaoOriginal = Versao;
             }
         }
 

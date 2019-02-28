@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using DevExpress.XtraGrid.Views.Grid;
@@ -23,19 +24,16 @@ namespace VersionManager
             {
                 try
                 {
-                    await Task.Run(() => {
-                        _projetos.Clear();
-                        var projetos = Directory.EnumerateDirectories(@"D:\Projetos");
-                        foreach (var projeto in projetos)
-                        {
-                            var arquivoVersao = Configuracoes.ObterArquivoVersaoDoProjeto(projeto);
-                            if (arquivoVersao == null)
-                                continue;
-                            var arquivoManifesto = Configuracoes.ObterArquivoManifestoDoProjeto(projeto);
-
-                            _projetos.Add(new Projeto(projeto, arquivoVersao, arquivoManifesto));
-                        }
-                    });
+                    _projetos.Clear();
+                    var projetos = Directory.EnumerateDirectories(@"D:\Projetos");
+                    var tasks = (
+                        from projeto in projetos 
+                        let arquivoVersao = Configuracoes.ObterArquivoVersaoDoProjeto(projeto) 
+                        where arquivoVersao != null 
+                        let arquivoManifesto = Configuracoes.ObterArquivoManifestoDoProjeto(projeto) 
+                        select Task.Run(() => _projetos.Add(new Projeto(projeto, arquivoVersao, arquivoManifesto)))
+                    ).ToList();
+                    await Task.WhenAll(tasks);
                 }
                 finally
                 {
@@ -127,7 +125,6 @@ namespace VersionManager
 
         private async Task Pull()
         {
-            var detailView = gridProjetos.GetDetailView(gridProjetos.GetFocusedDataSourceRowIndex(), 0);
             var branch = (Projeto.LocalBranch)DetailView.GetFocusedRow();
             if (branch == null) return;
             using (new DlgAguarde(this, "Aguarde", "Fazendo pull do branch seelcionado."))
@@ -138,7 +135,7 @@ namespace VersionManager
                 }
                 catch (LibGit2SharpException x)
                 {
-                    if (x.Message.Contains("unsupported URL protocol") && 
+                    if (x.Message.Contains("unsupported URL protocol") &&
                         MessageBox.Show
                         (
                             "Não foi possivel realizar a operação pois o repositório usa um protocolo não suportado.\n " +
@@ -146,21 +143,20 @@ namespace VersionManager
                             "Atenção",
                             MessageBoxButtons.YesNo,
                             MessageBoxIcon.Warning
-                        ) == DialogResult.No)
-                        return;
-                    var projeto = ((Projeto) gridProjetos.GetFocusedRow());
-                    projeto.ConverterParaHttps();
-                    await Task.Run(() => branch.Pull());
-                }catch (Exception ex)
-                {
-                    DlgErro.Erro(this, ex,
-                        "Falha ao tentar fazer o pull.\n" +
-                        "Verifique se o usuário e senha estão configurados corretamente.\n" +
-                        "Atualmente conexões ssh não são suportadas."
-                    );
+                        ) == DialogResult.Yes)
+                    {
+                        var projeto = ((Projeto)gridProjetos.GetFocusedRow());
+                        projeto.ConverterParaHttps();
+                        await Pull();
+                    }
+                    else
+                    {
+                        DlgErro.Erro(this, x,
+                            "Falha ao tentar fazer o pull.\n"
+                        );
+                    }
                 }
             }
-
         }
 
         private void AdicionarDependencia()
@@ -193,17 +189,14 @@ namespace VersionManager
                 );
                 return;
             }
-
             if (MessageBox.Show(
                     $"Confirma o commit no branch {branch.Branch} ?",
                     "Pergunta",
                     MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Question) == DialogResult.Yes)
+                    MessageBoxIcon.Question) != DialogResult.Yes) return;
+            using (new DlgAguarde(this, "Aguarde", "Commitando arquivos alterados."))
             {
-                using (new DlgAguarde(this, "Aguarde", "Commitando arquivos alterados."))
-                {
-                    branch?.Comitar();
-                }
+                branch?.Comitar();
             }
         }
 
@@ -213,13 +206,52 @@ namespace VersionManager
             {
                 gridProjetos.ExpandMasterRow(i);
             }
-            
-            
         }
 
         private void BtnCollapseAll_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
         {
             gridProjetos.CollapseAllDetails();
+        }
+
+        public async Task Fetch()
+        {
+            using (new DlgAguarde(this, "Fetch", "Baixando atualizações dos repositórios"))
+            {
+                var projeto = ((Projeto) gridProjetos.GetFocusedRow());
+                if (projeto == null) return;
+                try
+                {
+                    await projeto.Fetch();
+                }
+                catch (LibGit2SharpException x)
+                {
+                    if (x.Message.Contains("unsupported URL protocol") &&
+                        MessageBox.Show
+                        (
+                            "Não foi possivel realizar a operação pois o repositório usa um protocolo não suportado.\n " +
+                            "Deseja converter o repositório para https e tentar novamente?",
+                            "Atenção",
+                            MessageBoxButtons.YesNo,
+                            MessageBoxIcon.Warning
+                        ) == DialogResult.Yes)
+                    {
+                        projeto.ConverterParaHttps();
+                        await Fetch();
+                    }
+                    else
+                    {
+                        DlgErro.Erro(this, x,
+                            "Falha ao tentar fazer o fetch.\n"
+                        );
+                    }
+                }
+            }
+        }
+
+
+        private async void BtnFetch_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
+        {
+            await Fetch();
         }
     }
 }

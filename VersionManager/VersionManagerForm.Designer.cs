@@ -71,6 +71,7 @@
             this.ribbonPageGroup3 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             this.ribbonPage2 = new DevExpress.XtraBars.Ribbon.RibbonPage();
             this.ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
+            this.BtnFetch = new DevExpress.XtraBars.BarButtonItem();
             ((System.ComponentModel.ISupportInitialize)(this.gridBranches)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.repItemVersao)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.repItemButtonOk)).BeginInit();
@@ -249,10 +250,11 @@
             this.BtnPush,
             this.BtnAddDependency,
             this.BtnExpandAll,
-            this.BtnCollapseAll});
+            this.BtnCollapseAll,
+            this.BtnFetch});
             this.ribbonControl1.Location = new System.Drawing.Point(0, 0);
             this.ribbonControl1.Margin = new System.Windows.Forms.Padding(4);
-            this.ribbonControl1.MaxItemId = 9;
+            this.ribbonControl1.MaxItemId = 10;
             this.ribbonControl1.Name = "ribbonControl1";
             this.ribbonControl1.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] {
             this.ribbonPage1});
@@ -348,6 +350,7 @@
             this.ribbonPageGroup2.ItemLinks.Add(this.BtnConfig);
             this.ribbonPageGroup2.ItemLinks.Add(this.BtnRefresh);
             this.ribbonPageGroup2.ItemLinks.Add(this.BtnPush);
+            this.ribbonPageGroup2.ItemLinks.Add(this.BtnFetch);
             this.ribbonPageGroup2.Name = "ribbonPageGroup2";
             this.ribbonPageGroup2.ShowCaptionButton = false;
             this.ribbonPageGroup2.Text = "Repositórios";
@@ -369,6 +372,15 @@
             this.ribbonPageGroup1.ItemLinks.Add(this.BtnConfig);
             this.ribbonPageGroup1.Name = "ribbonPageGroup1";
             this.ribbonPageGroup1.Text = "ribbonPageGroup1";
+            // 
+            // BtnFetch
+            // 
+            this.BtnFetch.Caption = "Fetch";
+            this.BtnFetch.Hint = "Faz o fetch de todos os repositórios";
+            this.BtnFetch.Id = 9;
+            this.BtnFetch.ImageOptions.SvgImage = ((DevExpress.Utils.Svg.SvgImage)(resources.GetObject("barButtonItem1.ImageOptions.SvgImage")));
+            this.BtnFetch.Name = "BtnFetch";
+            this.BtnFetch.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.BtnFetch_ItemClick);
             // 
             // VersionManagerForm
             // 
@@ -423,6 +435,7 @@
         private DevExpress.XtraBars.Ribbon.RibbonPageGroup ribbonPageGroup3;
         private DevExpress.XtraBars.BarButtonItem BtnCollapseAll;
         private DevExpress.XtraGrid.Columns.GridColumn colCaminho;
+        private DevExpress.XtraBars.BarButtonItem BtnFetch;
     }
 }
 

@@ -34,21 +34,19 @@ namespace VersionManager
         
         public List<LocalBranch> Branches { get; set; } = new List<LocalBranch>();
 
-        public async void Fetch(Repository repositorio)
+        public async Task Fetch()
         {
-            var remote = repositorio.Network.Remotes["origin"];
-            var refSpecs = remote.FetchRefSpecs.Select(x => x.Specification);
-            try
+            using (var repositorio = new Repository(Caminho))
             {
-                FetchOptions options = new FetchOptions
                 {
-                    CredentialsProvider = Configuracoes.ObterCredenciais()
-                };
-                await Task.Run(() => Commands.Fetch(repositorio,remote.Name, refSpecs, options, ""));
-            }
-            catch 
-            {
-
+                    var remote = repositorio.Network.Remotes["origin"];
+                    var refSpecs = remote.FetchRefSpecs.Select(x => x.Specification);
+                    var options = new FetchOptions
+                    {
+                        CredentialsProvider = Configuracoes.ObterCredenciais()
+                    };
+                    await Task.Run(() => Commands.Fetch(repositorio, remote.Name, refSpecs, options, ""));
+                }
             }
         }
 
@@ -78,6 +76,7 @@ namespace VersionManager
         public void ConverterParaHttps()
         {            
             var config = File.ReadAllText(Caminho + @"\.git\config");
+            config = config.Replace("ssh://git@bitbucket.org/", "https://bitbucket.org/");
             config = config.Replace("git@bitbucket.org:", "https://bitbucket.org/");            
             config = config.Replace(".git", "");
             File.WriteAllText(Caminho + @"\.git\config", config);
@@ -89,7 +88,6 @@ namespace VersionManager
             _arquivoVersaoIni = arquivoVersaoIni;
             _arquivoManifesto = arquivoManifesto;
             var repositorio = new Repository(Caminho);
-            //Fetch(repositorio);
 
             var branches = from b in repositorio.Branches
                 where !b.IsRemote

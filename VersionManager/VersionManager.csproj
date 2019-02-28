@@ -108,6 +108,10 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ncr-library\Ncr.Comum\Ncr.Comum.csproj">
+      <Project>{dab06485-5fa9-47d8-b6ea-73a030e75522}</Project>
+      <Name>Ncr.Comum</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ncr-library\Ncr.UI\Ncr.UI.csproj">
       <Project>{984a2a00-e0cb-42c8-b4a1-c0312e0658af}</Project>
       <Name>Ncr.UI</Name>

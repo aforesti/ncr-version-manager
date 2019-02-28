@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 15.0.28307.271
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VersionManager", "VersionManager\VersionManager.csproj", "{E33CC45C-B7FA-4AFF-8C92-5FC5AA849D9F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{DAB06485-5FA9-47D8-B6EA-73A030E75522} = {DAB06485-5FA9-47D8-B6EA-73A030E75522}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ncr.Comum", "ncr-library\Ncr.Comum\Ncr.Comum.csproj", "{DAB06485-5FA9-47D8-B6EA-73A030E75522}"
 EndProject

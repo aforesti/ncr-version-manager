@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using DevExpress.XtraGrid.Views.Grid;
+using LibGit2Sharp;
 using Ncr.Ui.Dlg;
 
 namespace VersionManager
@@ -50,48 +49,67 @@ namespace VersionManager
             await CarregarProjetos();
         }
 
-        private void gridProjetos_MasterRowGetLevelDefaultView(object sender, DevExpress.XtraGrid.Views.Grid.MasterRowGetLevelDefaultViewEventArgs e)
+        private void GridProjetos_MasterRowGetLevelDefaultView(object sender, DevExpress.XtraGrid.Views.Grid.MasterRowGetLevelDefaultViewEventArgs e)
         {
             e.DefaultView = gridBranches;
         }
 
-        private void barButtonItem1_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
+        private void BtnConfig_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
         {
             var config = new Configuracoes();
             config.Show();
         }
 
-        private async void barButtonItem2_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
+        private async void BtnRefresh_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
         {
             await CarregarProjetos();
         }
-
-       
+               
         private async void BtnPush_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
         {
-            var projeto = ((Projeto) gridProjetos.GetFocusedRow());
+            var projeto = ((Projeto)gridProjetos.GetFocusedRow());
             if (projeto == null) return;
+            await Push(projeto);
+        }
+
+        private async Task Push(Projeto projeto)
+        {
             using (new DlgAguarde(this, "Push", "Subindo commits para o servidor remoto."))
-            {
+            {                
                 try
                 {
                     await projeto.Push();
                 }
-                catch (Exception ex)
+                catch (LibGit2SharpException x)
                 {
-                    DlgErro.Erro(this, ex, 
+                    if (x.Message.Contains("unsupported URL protocol") &&
+                        MessageBox.Show
+                        (
+                            "Não foi possivel realizar a operação pois o repositório usa um protocolo não suportado.\n " +
+                            "Deseja converter o repositório para https e tentar novamente?",
+                            "Atenção",
+                            MessageBoxButtons.YesNo,
+                            MessageBoxIcon.Warning
+                        ) == DialogResult.No)
+                        return;
+
+                    projeto.ConverterParaHttps();
+                    await projeto.Push();
+                }
+                catch (Exception x)
+                {
+                    DlgErro.Erro(this, x,
                         "Falha ao tentar fazer o push dos commits.\n" +
                         "Verifique se o usuário e senha estão configurados corretamente.\n" +
                         "Atualmente conexões ssh não são suportadas."
                     );
                 }
             }
-
         }
 
         private GridView DetailView => (GridView) gridProjetos.GetDetailView(gridProjetos.GetFocusedDataSourceRowIndex(), 0);
 
-        private async void repItemButtonOk_ButtonClick(object sender, DevExpress.XtraEditors.Controls.ButtonPressedEventArgs e)
+        private async void RepItemButtonOk_ButtonClick(object sender, DevExpress.XtraEditors.Controls.ButtonPressedEventArgs e)
         {
             switch (e.Button.Index)
             {
@@ -118,7 +136,22 @@ namespace VersionManager
                 {
                     await Task.Run(() => branch.Pull());
                 }
-                catch (Exception ex)
+                catch (LibGit2SharpException x)
+                {
+                    if (x.Message.Contains("unsupported URL protocol") && 
+                        MessageBox.Show
+                        (
+                            "Não foi possivel realizar a operação pois o repositório usa um protocolo não suportado.\n " +
+                            "Deseja converter o repositório para https e tentar novamente?",
+                            "Atenção",
+                            MessageBoxButtons.YesNo,
+                            MessageBoxIcon.Warning
+                        ) == DialogResult.No)
+                        return;
+                    var projeto = ((Projeto) gridProjetos.GetFocusedRow());
+                    projeto.ConverterParaHttps();
+                    await Task.Run(() => branch.Pull());
+                }catch (Exception ex)
                 {
                     DlgErro.Erro(this, ex,
                         "Falha ao tentar fazer o pull.\n" +
@@ -167,8 +200,26 @@ namespace VersionManager
                     MessageBoxButtons.YesNo,
                     MessageBoxIcon.Question) == DialogResult.Yes)
             {
-                branch?.Comitar();
+                using (new DlgAguarde(this, "Aguarde", "Commitando arquivos alterados."))
+                {
+                    branch?.Comitar();
+                }
             }
+        }
+
+        private void BtnExpandAll_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
+        {
+            for (var i=0; i<gridProjetos.RowCount; i++)
+            {
+                gridProjetos.ExpandMasterRow(i);
+            }
+            
+            
+        }
+
+        private void BtnCollapseAll_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
+        {
+            gridProjetos.CollapseAllDetails();
         }
     }
 }

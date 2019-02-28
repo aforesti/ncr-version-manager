@@ -67,6 +67,9 @@
             this.ribbonPageGroup2 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             this.ribbonPage2 = new DevExpress.XtraBars.Ribbon.RibbonPage();
             this.ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
+            this.ribbonPageGroup3 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
+            this.BtnExpandAll = new DevExpress.XtraBars.BarButtonItem();
+            this.BtnCollapseAll = new DevExpress.XtraBars.BarButtonItem();
             ((System.ComponentModel.ISupportInitialize)(this.gridBranches)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.repItemVersao)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.repItemButtonOk)).BeginInit();
@@ -149,7 +152,7 @@
             new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.OK, "Comitar", -1, true, true, false, editorButtonImageOptions3, new DevExpress.Utils.KeyShortcut(System.Windows.Forms.Keys.None), serializableAppearanceObject9, serializableAppearanceObject10, serializableAppearanceObject11, serializableAppearanceObject12, "Commit", null, null, DevExpress.Utils.ToolTipAnchor.Default)});
             this.repItemButtonOk.Name = "repItemButtonOk";
             this.repItemButtonOk.TextEditStyle = DevExpress.XtraEditors.Controls.TextEditStyles.HideTextEditor;
-            this.repItemButtonOk.ButtonClick += new DevExpress.XtraEditors.Controls.ButtonPressedEventHandler(this.repItemButtonOk_ButtonClick);
+            this.repItemButtonOk.ButtonClick += new DevExpress.XtraEditors.Controls.ButtonPressedEventHandler(this.RepItemButtonOk_ButtonClick);
             // 
             // grid
             // 
@@ -195,7 +198,7 @@
             this.gridProjetos.OptionsImageLoad.AnimationType = DevExpress.Utils.ImageContentAnimationType.Push;
             this.gridProjetos.OptionsView.ShowGroupPanel = false;
             this.gridProjetos.OptionsView.ShowHorizontalLines = DevExpress.Utils.DefaultBoolean.False;
-            this.gridProjetos.MasterRowGetLevelDefaultView += new DevExpress.XtraGrid.Views.Grid.MasterRowGetLevelDefaultViewEventHandler(this.gridProjetos_MasterRowGetLevelDefaultView);
+            this.gridProjetos.MasterRowGetLevelDefaultView += new DevExpress.XtraGrid.Views.Grid.MasterRowGetLevelDefaultViewEventHandler(this.GridProjetos_MasterRowGetLevelDefaultView);
             // 
             // colNome
             // 
@@ -227,10 +230,12 @@
             this.skinDropDownButtonItem1,
             this.BtnCommitVersao,
             this.BtnPush,
-            this.BtnAddDependency});
+            this.BtnAddDependency,
+            this.BtnExpandAll,
+            this.BtnCollapseAll});
             this.ribbonControl1.Location = new System.Drawing.Point(0, 0);
             this.ribbonControl1.Margin = new System.Windows.Forms.Padding(4);
-            this.ribbonControl1.MaxItemId = 7;
+            this.ribbonControl1.MaxItemId = 9;
             this.ribbonControl1.Name = "ribbonControl1";
             this.ribbonControl1.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] {
             this.ribbonPage1});
@@ -254,7 +259,7 @@
             this.BtnConfig.ImageOptions.SvgImage = ((DevExpress.Utils.Svg.SvgImage)(resources.GetObject("BtnConfig.ImageOptions.SvgImage")));
             this.BtnConfig.Name = "BtnConfig";
             this.BtnConfig.RibbonStyle = DevExpress.XtraBars.Ribbon.RibbonItemStyles.Large;
-            this.BtnConfig.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.barButtonItem1_ItemClick);
+            this.BtnConfig.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.BtnConfig_ItemClick);
             // 
             // BtnRefresh
             // 
@@ -262,7 +267,7 @@
             this.BtnRefresh.Id = 4;
             this.BtnRefresh.ImageOptions.SvgImage = ((DevExpress.Utils.Svg.SvgImage)(resources.GetObject("BtnRefresh.ImageOptions.SvgImage")));
             this.BtnRefresh.Name = "BtnRefresh";
-            this.BtnRefresh.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.barButtonItem2_ItemClick);
+            this.BtnRefresh.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.BtnRefresh_ItemClick);
             // 
             // skinDropDownButtonItem1
             // 
@@ -298,7 +303,8 @@
             // ribbonPage1
             // 
             this.ribbonPage1.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] {
-            this.ribbonPageGroup2});
+            this.ribbonPageGroup2,
+            this.ribbonPageGroup3});
             this.ribbonPage1.Name = "ribbonPage1";
             // 
             // ribbonPageGroup2
@@ -321,6 +327,31 @@
             this.ribbonPageGroup1.ItemLinks.Add(this.BtnConfig);
             this.ribbonPageGroup1.Name = "ribbonPageGroup1";
             this.ribbonPageGroup1.Text = "ribbonPageGroup1";
+            // 
+            // ribbonPageGroup3
+            // 
+            this.ribbonPageGroup3.ItemLinks.Add(this.BtnExpandAll);
+            this.ribbonPageGroup3.ItemLinks.Add(this.BtnCollapseAll);
+            this.ribbonPageGroup3.Name = "ribbonPageGroup3";
+            this.ribbonPageGroup3.Text = "Grid";
+            // 
+            // BtnExpandAll
+            // 
+            this.BtnExpandAll.Caption = "Expandir tudo";
+            this.BtnExpandAll.Id = 7;
+            this.BtnExpandAll.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("barButtonItem1.ImageOptions.Image")));
+            this.BtnExpandAll.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("barButtonItem1.ImageOptions.LargeImage")));
+            this.BtnExpandAll.Name = "BtnExpandAll";
+            this.BtnExpandAll.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.BtnExpandAll_ItemClick);
+            // 
+            // BtnCollapseAll
+            // 
+            this.BtnCollapseAll.Caption = "Colapsar tudo";
+            this.BtnCollapseAll.Id = 8;
+            this.BtnCollapseAll.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("BtnCollapseAll.ImageOptions.Image")));
+            this.BtnCollapseAll.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("BtnCollapseAll.ImageOptions.LargeImage")));
+            this.BtnCollapseAll.Name = "BtnCollapseAll";
+            this.BtnCollapseAll.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.BtnCollapseAll_ItemClick);
             // 
             // VersionManagerForm
             // 
@@ -371,6 +402,9 @@
         private DevExpress.XtraBars.BarButtonItem BtnAddDependency;
         private DevExpress.XtraGrid.Columns.GridColumn colBtn;
         private DevExpress.XtraEditors.Repository.RepositoryItemButtonEdit repItemButtonOk;
+        private DevExpress.XtraBars.BarButtonItem BtnExpandAll;
+        private DevExpress.XtraBars.Ribbon.RibbonPageGroup ribbonPageGroup3;
+        private DevExpress.XtraBars.BarButtonItem BtnCollapseAll;
     }
 }
 

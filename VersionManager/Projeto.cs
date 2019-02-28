@@ -62,7 +62,7 @@ namespace VersionManager
                 };
 
                 var branches = from b in repo.Branches
-                    where !b.IsRemote
+                    where !b.IsRemote && b.TrackedBranch != null
                     select b;
 
                 await Task.Run(() =>
@@ -73,6 +73,14 @@ namespace VersionManager
                     }
                 });
             }
+        }
+
+        public void ConverterParaHttps()
+        {            
+            var config = File.ReadAllText(_caminho + @"\.git\config");
+            config = config.Replace("git@bitbucket.org:", "https://bitbucket.org/");            
+            config = config.Replace(".git", "");
+            File.WriteAllText(_caminho + @"\.git\config", config);
         }
 
         public Projeto(string caminho, string arquivoVersaoIni, string arquivoManifesto)

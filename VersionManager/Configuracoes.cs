@@ -89,6 +89,8 @@ namespace VersionManager
                 return "_build/pos/versao.ini";
             if (File.Exists(projeto + @"\_build\server.ini"))
                 return "_build/server.ini";
+            if (File.Exists(projeto + @"\server.ini"))
+                return "server.ini";
 
             var config = ConfigurationManager.AppSettings;
             return config["Versao."+projeto];
@@ -102,7 +104,9 @@ namespace VersionManager
                 return "_build/bin/pacote/manifesto.server";
             if (File.Exists(projeto + @"\_build\pos\pacote\manifesto.server"))
                 return "_build/pos/pacote/manifesto.server";
-
+            if (File.Exists(projeto + @"\pacote\manifesto.server"))
+                return "pacote/manifesto.server";
+            
             var config = ConfigurationManager.AppSettings;
             return config["Manifesto."+projeto]; 
         }

@@ -123,37 +123,43 @@ namespace VersionManager
                     manifesto["dependencias"][d.Nome] = d.Versao;
 
                 File.WriteAllText(_caminho + _arquivoManifesto, manifesto.ToString());
-            }
+            }            
 
-            private void ComitarVersaoIni()
+            private bool DependenciasAlteradas()
             {
-                Commands.Checkout(_repositorio, _branch);
-                AtualizarArquivoVersaoIni(Versao);
+                var dependencias = Dependencias.ToArray();
+                if (dependencias.Length != _dependenciasOriginais.Length)
+                    return true;
                 
-                Commands.Stage(_repositorio, _arquivoVersao);
-                Signature autor = ObterCommiter();
-                _repositorio.Commit($"Versão do {_nome} alterada para {Versao}", autor, autor);
-                _versaoOriginal = Versao;
-            }
-
-            private void ComitarManifesto()
-            {
-                Commands.Checkout(_repositorio, _branch);
-                AtualizarArquivoManifesto();
-
-                Commands.Stage(_repositorio, _arquivoManifesto);
-                Signature autor = ObterCommiter();
-                
-                _repositorio.Commit($"Atualização nas dependências do {_nome}", autor, autor);
-                _dependenciasOriginais = Dependencias.ToArray();
+                for (var i = 0; i < dependencias.Length; i++) 
+                {
+                    if (dependencias[i].Nome != _dependenciasOriginais[i].Nome || 
+                        dependencias[i].Versao != _dependenciasOriginais[i].Versao)
+                        return true;
+                }
+                return false;
             }
 
             public void Comitar()
             {
+                Commands.Checkout(_repositorio, _branch);
+                Signature autor = ObterCommiter();
+                string msg = "";
                 if (_versaoOriginal != Versao)
-                    ComitarVersaoIni();
-                if (_dependenciasOriginais != Dependencias.ToArray())
-                    ComitarManifesto();
+                {
+                    AtualizarArquivoVersaoIni(Versao);
+                    Commands.Stage(_repositorio, _arquivoVersao);
+                    msg = $"Versão alterada para {Versao}. ";
+                }                    
+                if (DependenciasAlteradas())
+                {
+                    AtualizarArquivoManifesto();
+                    Commands.Stage(_repositorio, _arquivoManifesto);
+                    msg += "Ajustes nas dependências do projeto.";                
+                }
+                _repositorio.Commit(msg, autor, autor);                
+                _versaoOriginal = Versao;
+                _dependenciasOriginais = Dependencias.ToArray();
             }
 
             private static Signature ObterCommiter()
@@ -175,7 +181,7 @@ namespace VersionManager
 
             public void Pull()
             {
-                var options = new LibGit2Sharp.PullOptions
+                var options = new PullOptions
                 {
                     FetchOptions = new FetchOptions()
                     {
@@ -183,7 +189,11 @@ namespace VersionManager
                     }
                 };
                 
+                if (!_branch.IsCurrentRepositoryHead && _branch.IsTracking)
+                    Commands.Checkout(_repositorio, _branch);
+                
                 Commands.Pull(_repositorio, ObterCommiter(), options);
+                    
                 Versao = ObterVersao();
                 _versaoOriginal = Versao;
             }

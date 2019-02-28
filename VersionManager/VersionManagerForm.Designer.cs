@@ -55,6 +55,7 @@
             this.grid = new DevExpress.XtraGrid.GridControl();
             this.gridProjetos = new DevExpress.XtraGrid.Views.Grid.GridView();
             this.colNome = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.colCaminho = new DevExpress.XtraGrid.Columns.GridColumn();
             this.fluentDesignFormContainer1 = new DevExpress.XtraBars.FluentDesignSystem.FluentDesignFormContainer();
             this.ribbonControl1 = new DevExpress.XtraBars.Ribbon.RibbonControl();
             this.BtnConfig = new DevExpress.XtraBars.BarButtonItem();
@@ -63,13 +64,13 @@
             this.BtnCommitVersao = new DevExpress.XtraBars.BarButtonItem();
             this.BtnPush = new DevExpress.XtraBars.BarButtonItem();
             this.BtnAddDependency = new DevExpress.XtraBars.BarButtonItem();
-            this.ribbonPage1 = new DevExpress.XtraBars.Ribbon.RibbonPage();
-            this.ribbonPageGroup2 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
-            this.ribbonPage2 = new DevExpress.XtraBars.Ribbon.RibbonPage();
-            this.ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
-            this.ribbonPageGroup3 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             this.BtnExpandAll = new DevExpress.XtraBars.BarButtonItem();
             this.BtnCollapseAll = new DevExpress.XtraBars.BarButtonItem();
+            this.ribbonPage1 = new DevExpress.XtraBars.Ribbon.RibbonPage();
+            this.ribbonPageGroup2 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
+            this.ribbonPageGroup3 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
+            this.ribbonPage2 = new DevExpress.XtraBars.Ribbon.RibbonPage();
+            this.ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             ((System.ComponentModel.ISupportInitialize)(this.gridBranches)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.repItemVersao)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.repItemButtonOk)).BeginInit();
@@ -186,7 +187,8 @@
             this.gridProjetos.Appearance.Row.Font = new System.Drawing.Font("Ubuntu", 11F);
             this.gridProjetos.Appearance.Row.Options.UseFont = true;
             this.gridProjetos.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
-            this.colNome});
+            this.colNome,
+            this.colCaminho});
             this.gridProjetos.DetailHeight = 747;
             this.gridProjetos.GridControl = this.grid;
             this.gridProjetos.Name = "gridProjetos";
@@ -198,6 +200,7 @@
             this.gridProjetos.OptionsImageLoad.AnimationType = DevExpress.Utils.ImageContentAnimationType.Push;
             this.gridProjetos.OptionsView.ShowGroupPanel = false;
             this.gridProjetos.OptionsView.ShowHorizontalLines = DevExpress.Utils.DefaultBoolean.False;
+            this.gridProjetos.OptionsView.ShowVerticalLines = DevExpress.Utils.DefaultBoolean.False;
             this.gridProjetos.MasterRowGetLevelDefaultView += new DevExpress.XtraGrid.Views.Grid.MasterRowGetLevelDefaultViewEventHandler(this.GridProjetos_MasterRowGetLevelDefaultView);
             // 
             // colNome
@@ -209,7 +212,21 @@
             this.colNome.OptionsColumn.AllowEdit = false;
             this.colNome.Visible = true;
             this.colNome.VisibleIndex = 0;
-            this.colNome.Width = 169;
+            this.colNome.Width = 302;
+            // 
+            // colCaminho
+            // 
+            this.colCaminho.AppearanceCell.Options.UseTextOptions = true;
+            this.colCaminho.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
+            this.colCaminho.AppearanceHeader.Options.UseTextOptions = true;
+            this.colCaminho.AppearanceHeader.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
+            this.colCaminho.Caption = "Caminho";
+            this.colCaminho.FieldName = "Caminho";
+            this.colCaminho.Name = "colCaminho";
+            this.colCaminho.OptionsColumn.AllowEdit = false;
+            this.colCaminho.Visible = true;
+            this.colCaminho.VisibleIndex = 1;
+            this.colCaminho.Width = 318;
             // 
             // fluentDesignFormContainer1
             // 
@@ -286,7 +303,7 @@
             // BtnPush
             // 
             this.BtnPush.Caption = "Push";
-            this.BtnPush.Hint = "Envia os commits pendentes para o servidor remoto";
+            this.BtnPush.Hint = "Envia os commits do projeto selecionado para o servidor remoto";
             this.BtnPush.Id = 3;
             this.BtnPush.ImageOptions.SvgImage = ((DevExpress.Utils.Svg.SvgImage)(resources.GetObject("BtnPush.ImageOptions.SvgImage")));
             this.BtnPush.Name = "BtnPush";
@@ -299,6 +316,24 @@
             this.BtnAddDependency.Id = 5;
             this.BtnAddDependency.ImageOptions.SvgImage = ((DevExpress.Utils.Svg.SvgImage)(resources.GetObject("BtnAddDependency.ImageOptions.SvgImage")));
             this.BtnAddDependency.Name = "BtnAddDependency";
+            // 
+            // BtnExpandAll
+            // 
+            this.BtnExpandAll.Caption = "Expandir tudo";
+            this.BtnExpandAll.Id = 7;
+            this.BtnExpandAll.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("BtnExpandAll.ImageOptions.Image")));
+            this.BtnExpandAll.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("BtnExpandAll.ImageOptions.LargeImage")));
+            this.BtnExpandAll.Name = "BtnExpandAll";
+            this.BtnExpandAll.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.BtnExpandAll_ItemClick);
+            // 
+            // BtnCollapseAll
+            // 
+            this.BtnCollapseAll.Caption = "Colapsar tudo";
+            this.BtnCollapseAll.Id = 8;
+            this.BtnCollapseAll.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("BtnCollapseAll.ImageOptions.Image")));
+            this.BtnCollapseAll.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("BtnCollapseAll.ImageOptions.LargeImage")));
+            this.BtnCollapseAll.Name = "BtnCollapseAll";
+            this.BtnCollapseAll.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.BtnCollapseAll_ItemClick);
             // 
             // ribbonPage1
             // 
@@ -317,6 +352,13 @@
             this.ribbonPageGroup2.ShowCaptionButton = false;
             this.ribbonPageGroup2.Text = "Repositórios";
             // 
+            // ribbonPageGroup3
+            // 
+            this.ribbonPageGroup3.ItemLinks.Add(this.BtnExpandAll);
+            this.ribbonPageGroup3.ItemLinks.Add(this.BtnCollapseAll);
+            this.ribbonPageGroup3.Name = "ribbonPageGroup3";
+            this.ribbonPageGroup3.Text = "Grid";
+            // 
             // ribbonPage2
             // 
             this.ribbonPage2.Name = "ribbonPage2";
@@ -327,31 +369,6 @@
             this.ribbonPageGroup1.ItemLinks.Add(this.BtnConfig);
             this.ribbonPageGroup1.Name = "ribbonPageGroup1";
             this.ribbonPageGroup1.Text = "ribbonPageGroup1";
-            // 
-            // ribbonPageGroup3
-            // 
-            this.ribbonPageGroup3.ItemLinks.Add(this.BtnExpandAll);
-            this.ribbonPageGroup3.ItemLinks.Add(this.BtnCollapseAll);
-            this.ribbonPageGroup3.Name = "ribbonPageGroup3";
-            this.ribbonPageGroup3.Text = "Grid";
-            // 
-            // BtnExpandAll
-            // 
-            this.BtnExpandAll.Caption = "Expandir tudo";
-            this.BtnExpandAll.Id = 7;
-            this.BtnExpandAll.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("barButtonItem1.ImageOptions.Image")));
-            this.BtnExpandAll.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("barButtonItem1.ImageOptions.LargeImage")));
-            this.BtnExpandAll.Name = "BtnExpandAll";
-            this.BtnExpandAll.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.BtnExpandAll_ItemClick);
-            // 
-            // BtnCollapseAll
-            // 
-            this.BtnCollapseAll.Caption = "Colapsar tudo";
-            this.BtnCollapseAll.Id = 8;
-            this.BtnCollapseAll.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("BtnCollapseAll.ImageOptions.Image")));
-            this.BtnCollapseAll.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("BtnCollapseAll.ImageOptions.LargeImage")));
-            this.BtnCollapseAll.Name = "BtnCollapseAll";
-            this.BtnCollapseAll.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.BtnCollapseAll_ItemClick);
             // 
             // VersionManagerForm
             // 
@@ -405,6 +422,7 @@
         private DevExpress.XtraBars.BarButtonItem BtnExpandAll;
         private DevExpress.XtraBars.Ribbon.RibbonPageGroup ribbonPageGroup3;
         private DevExpress.XtraBars.BarButtonItem BtnCollapseAll;
+        private DevExpress.XtraGrid.Columns.GridColumn colCaminho;
     }
 }
 

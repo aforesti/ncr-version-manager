@@ -13,21 +13,21 @@ namespace VersionManager
 {
     public partial class Projeto
     {
-        private readonly string _caminho;
-
+        
         private readonly string _arquivoVersaoIni;
 
         private readonly string _arquivoManifesto;
 
+        public string Caminho { get; }
         public string Nome
         {
             get
             {
                 if (_arquivoManifesto == null || 
-                   !File.Exists(_caminho +"\\"+ _arquivoManifesto.Replace("/","\\")))
-                    return _caminho.Substring(_caminho.LastIndexOf('\\') + 1);
+                   !File.Exists(Caminho +"\\"+ _arquivoManifesto.Replace("/","\\")))
+                    return Caminho.Substring(Caminho.LastIndexOf('\\') + 1);
 
-                var manifesto = JObject.Parse(File.ReadAllText(Path.Combine(_caminho, _arquivoManifesto)));
+                var manifesto = JObject.Parse(File.ReadAllText(Path.Combine(Caminho, _arquivoManifesto)));
                 return manifesto["nome"].ToString(); 
             }
         }
@@ -54,7 +54,7 @@ namespace VersionManager
 
         public async Task Push()
         {
-            using (var repo = new Repository(_caminho))
+            using (var repo = new Repository(Caminho))
             {
                 var options = new PushOptions
                 {
@@ -77,18 +77,18 @@ namespace VersionManager
 
         public void ConverterParaHttps()
         {            
-            var config = File.ReadAllText(_caminho + @"\.git\config");
+            var config = File.ReadAllText(Caminho + @"\.git\config");
             config = config.Replace("git@bitbucket.org:", "https://bitbucket.org/");            
             config = config.Replace(".git", "");
-            File.WriteAllText(_caminho + @"\.git\config", config);
+            File.WriteAllText(Caminho + @"\.git\config", config);
         }
 
         public Projeto(string caminho, string arquivoVersaoIni, string arquivoManifesto)
         {
-            _caminho = caminho;
+            Caminho = caminho;
             _arquivoVersaoIni = arquivoVersaoIni;
             _arquivoManifesto = arquivoManifesto;
-            var repositorio = new Repository(_caminho);
+            var repositorio = new Repository(Caminho);
             //Fetch(repositorio);
 
             var branches = from b in repositorio.Branches

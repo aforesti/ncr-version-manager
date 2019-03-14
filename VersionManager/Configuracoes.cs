@@ -1,22 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Configuration;
-using System.Data;
-using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using LibGit2Sharp;
 using LibGit2Sharp.Handlers;
 
 namespace VersionManager
 {
-    public partial class Configuracoes : Form
+    using JetBrains.Annotations;
+
+    internal sealed partial class Configuracoes : Form
     {
-        public Configuracoes()
+        internal Configuracoes()
         {
             InitializeComponent();
             CarregarConfiguracoes();
@@ -30,12 +26,12 @@ namespace VersionManager
             TxtSenha.Text = config["senha"];
         }
 
-        private void simpleButton1_Click(object sender, EventArgs e)
+        private void BtnFechar(object sender, EventArgs e)
         {
             Close();
         }
 
-        private void simpleButton2_Click(object sender, EventArgs e)
+        private void BtnSalvar_Click(object sender, EventArgs e)
         {
             SalvarConfiguracao("nomeCommiter", TxtNomeCommiter.Text);
             SalvarConfiguracao("emailCommiter", TxtEmailCommiter.Text);
@@ -43,32 +39,30 @@ namespace VersionManager
             Close();
         }
 
-        private void SalvarConfiguracao(string key, string value)
+        private static void SalvarConfiguracao(string key, string value)
         {
             try  
             {  
                 var configFile = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);  
                 var settings = configFile.AppSettings.Settings;  
                 if (settings[key] == null)  
-                {  
                     settings.Add(key, value);  
-                }  
                 else  
-                {  
                     settings[key].Value = value;  
-                }  
-                configFile.Save(ConfigurationSaveMode.Modified);  
+                
+                configFile.Save(ConfigurationSaveMode.Modified); 
+                
                 ConfigurationManager.RefreshSection(configFile.AppSettings.SectionInformation.Name);  
             }  
             catch (ConfigurationErrorsException)  
             {  
-                MessageBox.Show("Erro ao gravar as configurações no arquivo.");  
+                MessageBox.Show(@"Erro ao gravar as configurações no arquivo.");  
             }  
         }
 
-        public static CredentialsHandler ObterCredenciais()
+        [NotNull]
+        internal static CredentialsHandler ObterCredenciais()
         {
-
             var config = ConfigurationManager.AppSettings;
             var username = config["emailCommiter"];
             var password = config["senha"];
@@ -79,36 +73,45 @@ namespace VersionManager
             };
         }
 
-        public static string ObterArquivoVersaoDoProjeto(string projeto)
+        internal static string ObterArquivoVersaoDoProjeto(string projeto)
         {
-            if (File.Exists(projeto + @"\_build\versao.ini"))
-                return "_build/versao.ini";
-            if (File.Exists(projeto + @"\_build\bin\versao.ini"))
-                return "_build/bin/versao.ini";
-            if (File.Exists(projeto + @"\_build\pos\versao.ini"))
-                return "_build/pos/versao.ini";
-            if (File.Exists(projeto + @"\_build\server.ini"))
-                return "_build/server.ini";
-            if (File.Exists(projeto + @"\server.ini"))
-                return "server.ini";
+            var locaisPossiveis = new List<string>
+            {
+                @"_build\versao.ini",
+                @"_build\bin\versao.ini",
+                @"_build\pos\versao.ini",
+                @"_build\server.ini",
+                @"server.ini",
+            };
 
-            var config = ConfigurationManager.AppSettings;
-            return config["Versao."+projeto];
-        }
-
-        public static string ObterArquivoManifestoDoProjeto(string projeto)
-        {
-            if (File.Exists(projeto + @"\_build\pacote\manifesto.server"))
-                return "_build/pacote/manifesto.server";
-            if (File.Exists(projeto + @"\_build\bin\pacote\manifesto.server"))
-                return "_build/bin/pacote/manifesto.server";
-            if (File.Exists(projeto + @"\_build\pos\pacote\manifesto.server"))
-                return "_build/pos/pacote/manifesto.server";
-            if (File.Exists(projeto + @"\pacote\manifesto.server"))
-                return "pacote/manifesto.server";
+            foreach (var local in locaisPossiveis)
+            {
+                if (File.Exists(Path.Combine(projeto, local)))
+                    return local.Replace("\\", "/");
+            }
             
             var config = ConfigurationManager.AppSettings;
-            return config["Manifesto."+projeto]; 
+            return config["Versao." + projeto];
+        }
+
+        internal static string ObterArquivoManifestoDoProjeto(string projeto)
+        {
+            var locaisPossiveis = new List<string>
+            {
+                @"_build\pacote\manifesto.server",
+                @"_build\bin\pacote\manifesto.server",
+                @"_build\pos\pacote\manifesto.server",
+                @"_build\manifesto.server"
+            };
+
+            foreach (var local in locaisPossiveis)
+            {
+                if (File.Exists(Path.Combine(projeto, local)))
+                    return local.Replace("\\", "/");
+            }
+            
+            var config = ConfigurationManager.AppSettings;
+            return config["Manifesto." + projeto]; 
         }
     }
 }

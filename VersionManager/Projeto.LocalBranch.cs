@@ -13,7 +13,7 @@ using Version = System.Version;
 
 namespace VersionManager
 {
-    public partial class Projeto
+    public sealed partial class Projeto
     {
         public class LocalBranch
         {
@@ -76,8 +76,7 @@ namespace VersionManager
                         }
                     }
                 }
-                catch (Exception)
-                {
+                catch {
 
                 }
             }

@@ -1,6 +1,6 @@
 ﻿namespace VersionManager
 {
-    partial class Configuracoes
+    internal sealed partial class Configuracoes
     {
         /// <summary>
         /// Required designer variable.
@@ -78,7 +78,7 @@
             this.simpleButton2.StyleController = this.layoutControl1;
             this.simpleButton2.TabIndex = 7;
             this.simpleButton2.Text = "Salvar";
-            this.simpleButton2.Click += new System.EventHandler(this.simpleButton2_Click);
+            this.simpleButton2.Click += new System.EventHandler(this.BtnSalvar_Click);
             // 
             // simpleButton1
             // 
@@ -88,7 +88,7 @@
             this.simpleButton1.StyleController = this.layoutControl1;
             this.simpleButton1.TabIndex = 6;
             this.simpleButton1.Text = "Fechar";
-            this.simpleButton1.Click += new System.EventHandler(this.simpleButton1_Click);
+            this.simpleButton1.Click += new System.EventHandler(this.BtnFechar);
             // 
             // TxtEmailCommiter
             // 

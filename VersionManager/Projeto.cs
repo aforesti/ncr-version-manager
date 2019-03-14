@@ -11,9 +11,8 @@ using Newtonsoft.Json.Linq;
 
 namespace VersionManager
 {
-    public partial class Projeto
+    public sealed partial class Projeto
     {
-        
         private readonly string _arquivoVersaoIni;
 
         private readonly string _arquivoManifesto;
@@ -32,7 +31,7 @@ namespace VersionManager
             }
         }
         
-        public List<LocalBranch> Branches { get; set; } = new List<LocalBranch>();
+        public List<LocalBranch> Branches { get; } = new List<LocalBranch>();
 
         public async Task Fetch()
         {

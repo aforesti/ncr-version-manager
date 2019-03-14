@@ -2,7 +2,7 @@
 
 namespace VersionManager
 {
-    public partial class Projeto
+    public sealed partial class Projeto
     {
         public class Dependencia
         {

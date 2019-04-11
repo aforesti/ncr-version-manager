@@ -1,12 +1,9 @@
 using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
-using DevExpress.XtraEditors.Controls;
+using Atlassian.Jira;
 using LibGit2Sharp;
-using LibGit2Sharp.Handlers;
 using Newtonsoft.Json.Linq;
 
 namespace VersionManager
@@ -30,7 +27,9 @@ namespace VersionManager
                 return manifesto["nome"].ToString(); 
             }
         }
-        
+
+        public string VersaoNoJira { get; set; }
+
         public List<LocalBranch> Branches { get; } = new List<LocalBranch>();
 
         public async Task Fetch()
@@ -81,6 +80,26 @@ namespace VersionManager
             File.WriteAllText(Caminho + @"\.git\config", config);
         }
 
+        private Jira _jira;
+        private readonly Dictionary<string, string> _projetosJira = new Dictionary<string, string>()
+        {
+            ["Colibri"] = "DSK",
+            ["Config"] = "CFG",
+            ["CBO"] = "CBO",
+            ["ColibriAgent"] = "AG",
+            ["PluginFiscal"] = "FI",
+            ["Launcher"] = "LA",
+            ["Reports"] = "REP",
+            ["Microterm"] = "MT",
+            ["Guard"] = "GU",
+            ["Sync"] = "SY",
+            ["Master"] = "MA",
+            ["Monitor"] = "PM",
+            ["Transact"] = "TR"
+        };
+
+        private string JiraKey => _projetosJira.ContainsKey(Nome) ? _projetosJira[Nome] : null;
+
         public Projeto(string caminho, string arquivoVersaoIni, string arquivoManifesto)
         {
             Caminho = caminho;
@@ -88,14 +107,16 @@ namespace VersionManager
             _arquivoManifesto = arquivoManifesto;
             var repositorio = new Repository(Caminho);
 
-            var branches = from b in repositorio.Branches
-                where !b.IsRemote
-                select b;           
+            var branches = repositorio.Branches.Where(b => !b.IsRemote);
             
             foreach (var branch in branches)
             {
                 Branches.Add(new LocalBranch(Nome, repositorio, branch, arquivoVersaoIni, arquivoManifesto));
             }
+
+            _jira = Jira.CreateRestClient(@"https://jira.ncrcolibri.com.br", "dev", "dev@1234");
+            if (JiraKey != null)
+                VersaoNoJira = _jira.Versions.GetVersionsAsync(JiraKey).Result.LastOrDefault(v => !v.Name.Contains("?"))?.Name;
         }
         
         
